@@ -1,0 +1,393 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ───────────────────────────────────────────────────────────────
+   Design tokens — semantic, theme-aware.
+   Light is the default; .dark on <html> swaps the same names.
+   ─────────────────────────────────────────────────────────────── */
+:root {
+  /* Surfaces */
+  --c-canvas: #f7f9fb;
+  --c-surface: #ffffff;
+  --c-elevated: #ffffff;
+  --c-hover: #eef2f6;
+  --c-active: #e3e9ee;
+
+  /* Lines */
+  --c-line: #e3e8ed;
+  --c-line-strong: #ccd4dc;
+
+  /* Text */
+  --c-fg: #0b1019;
+  --c-fg-muted: #56657a;
+  --c-fg-subtle: #8a96a8;
+  --c-fg-faint: #b8c0cb;
+
+  /* Brand / accent (Bluesky-style cobalt) */
+  --c-accent: #1083fe;
+  --c-accent-hover: #0070e0;
+  --c-accent-soft: #e6f0fe;
+  --c-accent-fg: #ffffff;
+
+  /* Semantic — answer buttons */
+  --c-again: #e5484d;
+  --c-again-soft: #fde7e9;
+  --c-hard: #e8810a;
+  --c-hard-soft: #fcefd9;
+  --c-good: #18a957;
+  --c-good-soft: #d8f4e0;
+  --c-easy: #1083fe;
+  --c-easy-soft: #e6f0fe;
+
+  /* Status accents (counts) */
+  --c-new: #1083fe;
+  --c-learn: #e8810a;
+  --c-due: #18a957;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgb(11 16 25 / 0.06);
+  --shadow-md: 0 4px 12px rgb(11 16 25 / 0.08);
+  --shadow-lg: 0 16px 40px rgb(11 16 25 / 0.12);
+
+  /* Radii */
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 14px;
+  --r-xl: 20px;
+
+  color-scheme: light;
+}
+
+.dark {
+  --c-canvas: #0e141b;
+  --c-surface: #161d26;
+  --c-elevated: #1d2530;
+  --c-hover: #1f2832;
+  --c-active: #29333f;
+
+  --c-line: #262f3a;
+  --c-line-strong: #3a4452;
+
+  --c-fg: #f1f3f5;
+  --c-fg-muted: #97a3b3;
+  --c-fg-subtle: #6c7787;
+  --c-fg-faint: #4a5360;
+
+  --c-accent: #208bfe;
+  --c-accent-hover: #4ea2fe;
+  --c-accent-soft: rgb(32 139 254 / 0.14);
+  --c-accent-fg: #ffffff;
+
+  --c-again: #ff6369;
+  --c-again-soft: rgb(229 72 77 / 0.18);
+  --c-hard: #f59e3a;
+  --c-hard-soft: rgb(232 129 10 / 0.18);
+  --c-good: #3ecf72;
+  --c-good-soft: rgb(24 169 87 / 0.18);
+  --c-easy: #208bfe;
+  --c-easy-soft: rgb(32 139 254 / 0.18);
+
+  --c-new: #4ea2fe;
+  --c-learn: #f59e3a;
+  --c-due: #3ecf72;
+
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.35);
+  --shadow-md: 0 4px 12px rgb(0 0 0 / 0.4);
+  --shadow-lg: 0 16px 40px rgb(0 0 0 / 0.55);
+
+  color-scheme: dark;
+}
+
+/* Expose tokens to Tailwind as utility classes (bg-canvas, text-fg, …). */
+@theme inline {
+  --color-canvas: var(--c-canvas);
+  --color-surface: var(--c-surface);
+  --color-elevated: var(--c-elevated);
+  --color-hover: var(--c-hover);
+  --color-active: var(--c-active);
+
+  --color-line: var(--c-line);
+  --color-line-strong: var(--c-line-strong);
+
+  --color-fg: var(--c-fg);
+  --color-fg-muted: var(--c-fg-muted);
+  --color-fg-subtle: var(--c-fg-subtle);
+  --color-fg-faint: var(--c-fg-faint);
+
+  --color-accent: var(--c-accent);
+  --color-accent-hover: var(--c-accent-hover);
+  --color-accent-soft: var(--c-accent-soft);
+  --color-accent-fg: var(--c-accent-fg);
+
+  --color-again: var(--c-again);
+  --color-again-soft: var(--c-again-soft);
+  --color-hard: var(--c-hard);
+  --color-hard-soft: var(--c-hard-soft);
+  --color-good: var(--c-good);
+  --color-good-soft: var(--c-good-soft);
+  --color-easy: var(--c-easy);
+  --color-easy-soft: var(--c-easy-soft);
+
+  --color-new: var(--c-new);
+  --color-learn: var(--c-learn);
+  --color-due: var(--c-due);
+
+  --radius-sm: var(--r-sm);
+  --radius-md: var(--r-md);
+  --radius-lg: var(--r-lg);
+  --radius-xl: var(--r-xl);
+
+  --shadow-soft: var(--shadow-sm);
+  --shadow-pop: var(--shadow-md);
+  --shadow-overlay: var(--shadow-lg);
+}
+
+/* ───────────────────────────────────────────────────────────────
+   Base
+   ─────────────────────────────────────────────────────────────── */
+:root {
+  font-family:
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    "SF Pro Text",
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+  font-feature-settings: "cv11", "ss01";
+  line-height: 1.5;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html,
+body,
+#app {
+  background: var(--c-canvas);
+  color: var(--c-fg);
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+}
+
+/* Smooth theme transitions on common properties, but skip transforms/positions
+   so menus and modals open instantly. */
+*,
+*::before,
+*::after {
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease,
+    fill 0.15s ease,
+    stroke 0.15s ease,
+    box-shadow 0.15s ease,
+    opacity 0.15s ease;
+}
+
+/* Scrollbar — themed, slim */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--c-line-strong);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--c-fg-subtle);
+  background-clip: padding-box;
+  border: 2px solid transparent;
+}
+
+/* Focus ring */
+:focus-visible {
+  outline: 2px solid var(--c-accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Form base */
+input[type="text"],
+input[type="number"],
+input[type="search"],
+input[type="email"],
+input[type="password"],
+textarea,
+select {
+  color: var(--c-fg);
+  font-family: inherit;
+  background: var(--c-surface);
+  border: 1px solid var(--c-line);
+  border-radius: var(--r-md);
+}
+input::placeholder,
+textarea::placeholder {
+  color: var(--c-fg-faint);
+}
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--c-accent);
+  box-shadow: 0 0 0 3px var(--c-accent-soft);
+}
+
+select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2356657a' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.5rem center;
+  padding-right: 2rem;
+}
+.dark select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2397a3b3' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");
+}
+
+/* Checkbox accent */
+input[type="checkbox"] {
+  accent-color: var(--c-accent);
+}
+
+/* ───────────────────────────────────────────────────────────────
+   Reusable component classes — composed of tokens
+   ─────────────────────────────────────────────────────────────── */
+@layer components {
+  /* Primary action */
+  .btn-primary {
+    background: var(--c-accent);
+    color: var(--c-accent-fg);
+    border-radius: var(--r-md);
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+    border: 1px solid transparent;
+  }
+  .btn-primary:hover {
+    background: var(--c-accent-hover);
+  }
+
+  /* Secondary / ghost on surface */
+  .btn-secondary {
+    background: transparent;
+    color: var(--c-fg);
+    border: 1px solid var(--c-line);
+    border-radius: var(--r-md);
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+  }
+  .btn-secondary:hover {
+    background: var(--c-hover);
+    border-color: var(--c-line-strong);
+  }
+
+  /* Subtle pill — for header chrome */
+  .btn-pill {
+    background: var(--c-hover);
+    color: var(--c-fg);
+    border-radius: 999px;
+    padding: 0.375rem 0.875rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    border: 1px solid transparent;
+  }
+  .btn-pill:hover {
+    background: var(--c-active);
+  }
+
+  /* Icon button */
+  .btn-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 999px;
+    color: var(--c-fg-muted);
+    background: transparent;
+  }
+  .btn-icon:hover {
+    background: var(--c-hover);
+    color: var(--c-fg);
+  }
+
+  /* Danger */
+  .btn-danger {
+    background: var(--c-again);
+    color: white;
+    border-radius: var(--r-md);
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+  }
+  .btn-danger:hover {
+    filter: brightness(1.08);
+  }
+
+  /* Card surface */
+  .card {
+    background: var(--c-surface);
+    border: 1px solid var(--c-line);
+    border-radius: var(--r-lg);
+  }
+
+  /* Modal panel */
+  .modal-panel {
+    background: var(--c-elevated);
+    border: 1px solid var(--c-line);
+    border-radius: var(--r-xl);
+    box-shadow: var(--shadow-lg);
+  }
+  .modal-backdrop {
+    background: rgb(0 0 0 / 0.55);
+    backdrop-filter: blur(4px);
+  }
+
+  /* Field label */
+  .field-label {
+    display: block;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--c-fg-muted);
+    margin-bottom: 0.375rem;
+  }
+
+  /* Field input */
+  .field-input {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    background: var(--c-surface);
+    border: 1px solid var(--c-line);
+    border-radius: var(--r-md);
+    color: var(--c-fg);
+    font-size: 0.875rem;
+  }
+  .dark .field-input {
+    background: var(--c-canvas);
+  }
+
+  /* Tag chip */
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.125rem 0.625rem;
+    background: var(--c-hover);
+    border: 1px solid var(--c-line);
+    border-radius: 999px;
+    font-size: 0.75rem;
+    color: var(--c-fg);
+  }
+}

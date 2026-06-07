@@ -1,0 +1,35 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "ignorePatterns": ["dist", "node_modules", "*.apkg"],
+  "options": {
+    "typeAware": true
+  },
+  "rules": {
+    "no-unused-vars": "warn",
+    "no-console": "off",
+    "eqeqeq": "error",
+    "no-var": "error",
+    "prefer-const": "warn",
+    "no-debugger": "error",
+    "no-duplicate-case": "error",
+    "no-empty": "warn",
+    "no-extra-boolean-cast": "warn",
+    "no-irregular-whitespace": "warn",
+    "no-loss-of-precision": "error",
+    "no-unsafe-negation": "error",
+    "no-constant-condition": "warn",
+    "no-self-compare": "error",
+    "no-template-curly-in-string": "warn",
+
+    "typescript/no-floating-promises": "error",
+    "typescript/no-misused-promises": "error",
+    "typescript/no-unnecessary-condition": "warn",
+    "typescript/no-unsafe-argument": "warn",
+    "typescript/no-unsafe-assignment": "warn",
+    "typescript/no-unsafe-call": "warn",
+    "typescript/no-unsafe-return": "warn",
+    "typescript/strict-boolean-expressions": "off",
+    "typescript/prefer-optional-chain": "warn",
+    "typescript/switch-exhaustiveness-check": "warn"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "project": ["src/**/*.ts", "src/**/*.vue"],
+  "ignore": [
+    "src/**/__tests__/**",
+    "src/ankiParser/**",
+    "src/db/schema.ts"
+  ],
+  "ignoreExportsUsedInFile": true,
+  "rules": {
+    "files": "error",
+    "exports": "warn",
+    "types": "warn",
+    "dependencies": "error",
+    "unlisted": "error"
+  }
+}
