@@ -313,7 +313,7 @@ async function confirmDelete() {
   showDeleteConfirm.value = false;
 }
 
-async function bulkChangeDeck(deck: typeof decks.value[number]) {
+async function bulkChangeDeck(deck: (typeof decks.value)[number]) {
   const deckUri = `at://self/cards.decay.flashcard.deck/${deck.tid}`;
   for (const row of selectedRows.value) {
     if (row.note.deck === deckUri) continue;
@@ -429,41 +429,80 @@ async function handleNoteSaved() {
                   @change="selectedKeys.size === sortedRows.length ? clearSelection() : selectAll()"
                 />
               </th>
-              <th class="px-3 py-2 cursor-pointer select-none hover:text-fg" @click="toggleSort('front')">
-                Front {{ sortColumn === 'front' ? (sortDirection === 'asc' ? '↑' : '↓') : '' }}
+              <th
+                class="px-3 py-2 cursor-pointer select-none hover:text-fg"
+                @click="toggleSort('front')"
+              >
+                Front {{ sortColumn === "front" ? (sortDirection === "asc" ? "↑" : "↓") : "" }}
               </th>
-              <th class="px-3 py-2 w-28 cursor-pointer select-none hover:text-fg" @click="toggleSort('deck')">
-                Deck {{ sortColumn === 'deck' ? (sortDirection === 'asc' ? '↑' : '↓') : '' }}
+              <th
+                class="px-3 py-2 w-28 cursor-pointer select-none hover:text-fg"
+                @click="toggleSort('deck')"
+              >
+                Deck {{ sortColumn === "deck" ? (sortDirection === "asc" ? "↑" : "↓") : "" }}
               </th>
-              <th class="px-3 py-2 w-24 cursor-pointer select-none hover:text-fg" @click="toggleSort('type')">
-                Type {{ sortColumn === 'type' ? (sortDirection === 'asc' ? '↑' : '↓') : '' }}
+              <th
+                class="px-3 py-2 w-24 cursor-pointer select-none hover:text-fg"
+                @click="toggleSort('type')"
+              >
+                Type {{ sortColumn === "type" ? (sortDirection === "asc" ? "↑" : "↓") : "" }}
               </th>
-              <th v-if="viewMode === 'notes'" class="px-3 py-2 w-12 cursor-pointer select-none hover:text-fg" @click="toggleSort('cards')">
-                Cards {{ sortColumn === 'cards' ? (sortDirection === 'asc' ? '↑' : '↓') : '' }}
+              <th
+                v-if="viewMode === 'notes'"
+                class="px-3 py-2 w-12 cursor-pointer select-none hover:text-fg"
+                @click="toggleSort('cards')"
+              >
+                Cards {{ sortColumn === "cards" ? (sortDirection === "asc" ? "↑" : "↓") : "" }}
               </th>
-              <th v-else class="px-3 py-2 w-24 cursor-pointer select-none hover:text-fg" @click="toggleSort('template')">
-                Template {{ sortColumn === 'template' ? (sortDirection === 'asc' ? '↑' : '↓') : '' }}
+              <th
+                v-else
+                class="px-3 py-2 w-24 cursor-pointer select-none hover:text-fg"
+                @click="toggleSort('template')"
+              >
+                Template
+                {{ sortColumn === "template" ? (sortDirection === "asc" ? "↑" : "↓") : "" }}
               </th>
-              <th class="px-3 py-2 w-20 cursor-pointer select-none hover:text-fg" @click="toggleSort('phase')">
-                Phase {{ sortColumn === 'phase' ? (sortDirection === 'asc' ? '↑' : '↓') : '' }}
+              <th
+                class="px-3 py-2 w-20 cursor-pointer select-none hover:text-fg"
+                @click="toggleSort('phase')"
+              >
+                Phase {{ sortColumn === "phase" ? (sortDirection === "asc" ? "↑" : "↓") : "" }}
               </th>
-              <th class="px-3 py-2 w-20 cursor-pointer select-none hover:text-fg" @click="toggleSort('due')">
-                Due {{ sortColumn === 'due' ? (sortDirection === 'asc' ? '↑' : '↓') : '' }}
+              <th
+                class="px-3 py-2 w-20 cursor-pointer select-none hover:text-fg"
+                @click="toggleSort('due')"
+              >
+                Due {{ sortColumn === "due" ? (sortDirection === "asc" ? "↑" : "↓") : "" }}
               </th>
-              <th class="px-3 py-2 w-16 cursor-pointer select-none hover:text-fg" @click="toggleSort('ivl')">
-                Ivl {{ sortColumn === 'ivl' ? (sortDirection === 'asc' ? '↑' : '↓') : '' }}
+              <th
+                class="px-3 py-2 w-16 cursor-pointer select-none hover:text-fg"
+                @click="toggleSort('ivl')"
+              >
+                Ivl {{ sortColumn === "ivl" ? (sortDirection === "asc" ? "↑" : "↓") : "" }}
               </th>
-              <th class="px-3 py-2 w-14 cursor-pointer select-none hover:text-fg" @click="toggleSort('ease')">
-                Ease {{ sortColumn === 'ease' ? (sortDirection === 'asc' ? '↑' : '↓') : '' }}
+              <th
+                class="px-3 py-2 w-14 cursor-pointer select-none hover:text-fg"
+                @click="toggleSort('ease')"
+              >
+                Ease {{ sortColumn === "ease" ? (sortDirection === "asc" ? "↑" : "↓") : "" }}
               </th>
-              <th class="px-3 py-2 w-12 cursor-pointer select-none hover:text-fg" @click="toggleSort('reps')">
-                Reps {{ sortColumn === 'reps' ? (sortDirection === 'asc' ? '↑' : '↓') : '' }}
+              <th
+                class="px-3 py-2 w-12 cursor-pointer select-none hover:text-fg"
+                @click="toggleSort('reps')"
+              >
+                Reps {{ sortColumn === "reps" ? (sortDirection === "asc" ? "↑" : "↓") : "" }}
               </th>
-              <th class="px-3 py-2 w-12 cursor-pointer select-none hover:text-fg" @click="toggleSort('laps')">
-                Laps {{ sortColumn === 'laps' ? (sortDirection === 'asc' ? '↑' : '↓') : '' }}
+              <th
+                class="px-3 py-2 w-12 cursor-pointer select-none hover:text-fg"
+                @click="toggleSort('laps')"
+              >
+                Laps {{ sortColumn === "laps" ? (sortDirection === "asc" ? "↑" : "↓") : "" }}
               </th>
-              <th class="px-3 py-2 w-28 cursor-pointer select-none hover:text-fg" @click="toggleSort('tags')">
-                Tags {{ sortColumn === 'tags' ? (sortDirection === 'asc' ? '↑' : '↓') : '' }}
+              <th
+                class="px-3 py-2 w-28 cursor-pointer select-none hover:text-fg"
+                @click="toggleSort('tags')"
+              >
+                Tags {{ sortColumn === "tags" ? (sortDirection === "asc" ? "↑" : "↓") : "" }}
               </th>
             </tr>
           </thead>
@@ -489,8 +528,18 @@ async function handleNoteSaved() {
                 />
               </td>
               <td class="px-3 py-2 truncate max-w-xs">{{ truncate(row.sortField, 80) }}</td>
-              <td class="px-3 py-2 text-fg-muted truncate" @contextmenu="onContextMenu($event, row, 'deck')">{{ row.deck.name }}</td>
-              <td class="px-3 py-2 text-fg-muted truncate" @contextmenu="onContextMenu($event, row, 'type')">{{ row.noteType.name }}</td>
+              <td
+                class="px-3 py-2 text-fg-muted truncate"
+                @contextmenu="onContextMenu($event, row, 'deck')"
+              >
+                {{ row.deck.name }}
+              </td>
+              <td
+                class="px-3 py-2 text-fg-muted truncate"
+                @contextmenu="onContextMenu($event, row, 'type')"
+              >
+                {{ row.noteType.name }}
+              </td>
               <td v-if="viewMode === 'notes'" class="px-3 py-2 text-fg-muted text-xs tabular-nums">
                 {{ row.cardCount }}
               </td>
@@ -519,7 +568,10 @@ async function handleNoteSaved() {
               <td class="px-3 py-2 text-fg-muted text-xs tabular-nums">
                 {{ (row.cardState ?? row.states[0])?.lapses ?? 0 }}
               </td>
-              <td class="px-3 py-2 text-fg-muted truncate max-w-[100px] text-xs" @contextmenu="onContextMenu($event, row, 'tags')">
+              <td
+                class="px-3 py-2 text-fg-muted truncate max-w-[100px] text-xs"
+                @contextmenu="onContextMenu($event, row, 'tags')"
+              >
                 {{ (row.note.tags ?? []).join(", ") }}
               </td>
             </tr>
@@ -650,10 +702,7 @@ async function handleNoteSaved() {
       :style="{ left: contextMenu.x + 'px', top: contextMenu.y + 'px' }"
       @click.stop
     >
-      <button
-        class="w-full text-left px-3 py-1.5 text-sm hover:bg-hover"
-        @click="applyFilter"
-      >
+      <button class="w-full text-left px-3 py-1.5 text-sm hover:bg-hover" @click="applyFilter">
         Filter: <span class="font-mono text-xs text-fg-muted">{{ contextMenu.value }}</span>
       </button>
     </div>

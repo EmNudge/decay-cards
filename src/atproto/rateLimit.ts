@@ -114,10 +114,7 @@ function clamp(n: number, lo: number, hi: number): number {
   return Math.max(lo, Math.min(hi, n));
 }
 
-function parseRetryAfter(
-  value: string | number | null | undefined,
-  nowMs: number,
-): number | null {
+function parseRetryAfter(value: string | number | null | undefined, nowMs: number): number | null {
   if (value == null) return null;
   if (typeof value === "number") return Math.max(0, value * 1000);
   const asNum = Number(value);

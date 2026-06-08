@@ -1,14 +1,6 @@
 import { describe, it, expect } from "vitest";
-import type {
-  NoteTypeRecord,
-  ReviewLogRecord,
-  ReviewStateRecord,
-} from "../../db/schema";
-import {
-  mergeNoteType,
-  mergeReviewState,
-  rebuildStudySummary,
-} from "../merge";
+import type { NoteTypeRecord, ReviewLogRecord, ReviewStateRecord } from "../../db/schema";
+import { mergeNoteType, mergeReviewState, rebuildStudySummary } from "../merge";
 
 const t0 = "2025-01-01T00:00:00Z";
 const t1 = "2025-02-01T00:00:00Z";
@@ -33,18 +25,14 @@ describe("mergeNoteType", () => {
         { id: "f0", name: "Front" },
         { id: "f1", name: "Back" },
       ],
-      templates: [
-        { id: "tmpl0", name: "Card 1", qfmt: "L", afmt: "L" },
-      ],
+      templates: [{ id: "tmpl0", name: "Card 1", qfmt: "L", afmt: "L" }],
     });
     const remote = baseNoteType({
       fields: [
         { id: "f0", name: "Front" },
         { id: "f2", name: "Hint" },
       ],
-      templates: [
-        { id: "tmpl1", name: "Card 2", qfmt: "R", afmt: "R" },
-      ],
+      templates: [{ id: "tmpl1", name: "Card 2", qfmt: "R", afmt: "R" }],
       updatedAt: t1,
     });
     const merged = mergeNoteType(local, remote);

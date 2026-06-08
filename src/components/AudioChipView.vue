@@ -59,7 +59,9 @@ function onTrimSaved(newSrc: string) {
         class="audio-chip-edit"
         title="Trim audio"
         @click.stop.prevent="openTrimmer"
-      >✂</button>
+      >
+        ✂
+      </button>
       <audio
         v-if="node.attrs.src"
         ref="audioRef"
@@ -143,7 +145,7 @@ function onTrimSaved(newSrc: string) {
   opacity: 1;
 }
 .audio-chip-edit:hover {
-  background: rgba(255,255,255,0.2);
+  background: rgba(255, 255, 255, 0.2);
 }
 audio {
   display: none;

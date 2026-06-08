@@ -18,7 +18,6 @@ import {
   applyResultToReviewState,
   toOldSchedulerSettings,
   createAlgorithm,
-
 } from "./bridge";
 import type { SchedulingAlgorithm } from "./algorithm";
 import type { Answer } from "./types";
@@ -245,21 +244,25 @@ export class StudyQueue {
         });
         break;
       case "added":
-        matched.sort((a, b) =>
-          new Date(a.note.createdAt).getTime() - new Date(b.note.createdAt).getTime(),
+        matched.sort(
+          (a, b) => new Date(a.note.createdAt).getTime() - new Date(b.note.createdAt).getTime(),
         );
         break;
       case "ivl-asc":
-        matched.sort((a, b) => (a.reviewState.intervalDays ?? 0) - (b.reviewState.intervalDays ?? 0));
+        matched.sort(
+          (a, b) => (a.reviewState.intervalDays ?? 0) - (b.reviewState.intervalDays ?? 0),
+        );
         break;
       case "ivl-desc":
-        matched.sort((a, b) => (b.reviewState.intervalDays ?? 0) - (a.reviewState.intervalDays ?? 0));
+        matched.sort(
+          (a, b) => (b.reviewState.intervalDays ?? 0) - (a.reviewState.intervalDays ?? 0),
+        );
         break;
       case "ease-asc":
         matched.sort((a, b) => (a.reviewState.easeFactor ?? 0) - (b.reviewState.easeFactor ?? 0));
         break;
       case "lapses-desc":
-        matched.sort((a, b) => (b.reviewState.lapses) - (a.reviewState.lapses));
+        matched.sort((a, b) => b.reviewState.lapses - a.reviewState.lapses);
         break;
       case "random":
       default:
@@ -314,7 +317,8 @@ export class StudyQueue {
     if (this.isFiltered) {
       // Filtered decks: show all non-suspended/buried cards that haven't been answered yet
       return this.cards.filter(
-        (c) => !c.reviewState.suspended && !c.reviewState.buried && !this.filteredAnswered.has(c.key),
+        (c) =>
+          !c.reviewState.suspended && !c.reviewState.buried && !this.filteredAnswered.has(c.key),
       );
     }
 

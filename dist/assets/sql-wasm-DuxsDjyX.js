@@ -1,1 +1,0 @@
-var e=`/assets/sql-wasm-UFUCzYNW.wasm`;export{e as default};

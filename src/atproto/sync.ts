@@ -20,19 +20,10 @@ import { deadLettersDb } from "../db/deadLetters";
 import { syncStateDb } from "../db/syncState";
 import { mediaDb } from "../db/media";
 import { getDb } from "../db/schema";
-import type {
-  OutboxEntry,
-  NoteTypeRecord,
-  ReviewLogRecord,
-  ReviewStateRecord,
-} from "../db/schema";
+import type { OutboxEntry, NoteTypeRecord, ReviewLogRecord, ReviewStateRecord } from "../db/schema";
 import { RecordsClient, batchWrites, type WriteOp, type ListedRecord } from "./records";
 import { COLLECTIONS, type CollectionDef } from "./collections";
-import {
-  mergeNoteType,
-  mergeReviewState,
-  rebuildStudySummary,
-} from "./merge";
+import { mergeNoteType, mergeReviewState, rebuildStudySummary } from "./merge";
 import { uploadBlob } from "./blobs";
 
 const MEDIA_NSID = "cards.decay.flashcard.media";
@@ -136,10 +127,7 @@ async function doDrain(agent: Agent): Promise<DrainOutcome> {
 
   for (let i = 0; i < batches.length; i++) {
     const batch = batches[i]!;
-    const batchEntries = batchable.slice(
-      batchedOpsSent,
-      batchedOpsSent + batch.length,
-    );
+    const batchEntries = batchable.slice(batchedOpsSent, batchedOpsSent + batch.length);
 
     try {
       await client.applyWrites(batch);
@@ -498,10 +486,7 @@ async function pullCollection(
   return result;
 }
 
-function pendingDominates(
-  entry: OutboxEntry,
-  remoteValue: Record<string, unknown>,
-): boolean {
+function pendingDominates(entry: OutboxEntry, remoteValue: Record<string, unknown>): boolean {
   if (entry.op === "delete") return true; // we're about to push a delete
   const local = entry.record as Record<string, unknown> | undefined;
   const localUpdated = local?.["updatedAt"];
@@ -576,8 +561,7 @@ function mergeDecide(
           ? { action: "take-remote" }
           : { action: "keep-local" };
       }
-      const remoteUpdated =
-        typeof remote["updatedAt"] === "string" ? remote["updatedAt"] : "";
+      const remoteUpdated = typeof remote["updatedAt"] === "string" ? remote["updatedAt"] : "";
       const localUpdated =
         local && typeof local["updatedAt"] === "string" ? local["updatedAt"] : "";
       const updatedAt = laterIso(remoteUpdated, localUpdated);

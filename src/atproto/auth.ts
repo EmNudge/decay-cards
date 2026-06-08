@@ -43,8 +43,7 @@ function getClient(): Promise<BrowserOAuthClient> {
   if (clientPromise) return clientPromise;
 
   const isLoopback =
-    window.location.hostname === "127.0.0.1" ||
-    window.location.hostname === "[::1]";
+    window.location.hostname === "127.0.0.1" || window.location.hostname === "[::1]";
 
   if (isLoopback) {
     // Loopback dev: `buildLoopbackClientId` encodes the 127.0.0.1 redirect

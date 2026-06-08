@@ -59,7 +59,11 @@ export function getRenderedCardString({
   // Handle FrontSide: if the template references {{FrontSide}} and it's not in variables,
   // render the front template and inject it
   let enrichedVariables = { ...variables };
-  if (frontTemplate && renderedString.includes("{{FrontSide}}") && !enrichedVariables["FrontSide"]) {
+  if (
+    frontTemplate &&
+    renderedString.includes("{{FrontSide}}") &&
+    !enrichedVariables["FrontSide"]
+  ) {
     let frontSideHtml = getRenderedCardString(
       omitUndefined({
         templateString: frontTemplate,

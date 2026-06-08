@@ -59,9 +59,7 @@ export async function migrateToPhase2(
     return { total: 0, queued: 0, done: true };
   }
 
-  const logs = (await reviewLogsDb.getAll()).sort((a, b) =>
-    a.tid.localeCompare(b.tid),
-  );
+  const logs = (await reviewLogsDb.getAll()).sort((a, b) => a.tid.localeCompare(b.tid));
   const reviewStates = await reviewStateDb.getAll();
   const notes = await notesDb.getAll();
   const noteTypes = await noteTypesDb.getAll();

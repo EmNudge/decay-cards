@@ -60,9 +60,7 @@ describe("RecordsClient.putRecord", () => {
   it("throws if agent has no DID", async () => {
     const agent = mockAgent("", { putRecord: vi.fn() });
     const client = new RecordsClient(agent, newLimiter());
-    await expect(client.putRecord("c.col", "k", {})).rejects.toThrow(
-      /authenticated agent/,
-    );
+    await expect(client.putRecord("c.col", "k", {})).rejects.toThrow(/authenticated agent/);
   });
 });
 
@@ -73,9 +71,7 @@ describe("RecordsClient.deleteRecord", () => {
     const agent = mockAgent("did:abc", { deleteRecord });
     const client = new RecordsClient(agent, newLimiter());
 
-    await expect(
-      client.deleteRecord("c.col", "missing"),
-    ).resolves.toBeUndefined();
+    await expect(client.deleteRecord("c.col", "missing")).resolves.toBeUndefined();
     expect(deleteRecord).toHaveBeenCalled();
   });
 

@@ -105,15 +105,23 @@ async function runPreview() {
     previewTotal.value = 0;
     return;
   }
-  if (!expr) { previewRows.value = []; previewTotal.value = 0; return; }
+  if (!expr) {
+    previewRows.value = [];
+    previewTotal.value = 0;
+    return;
+  }
 
   const allNotes = await notesDb.getAll();
   const allDecks = await decksDb.getAllActive();
   const allNoteTypes = await noteTypesDb.getAll();
   const allStates = await reviewStateDb.getAll();
 
-  const deckMap = new Map(allDecks.map((d) => [`at://self/cards.decay.flashcard.deck/${d.tid}`, d.name]));
-  const ntMap = new Map(allNoteTypes.map((nt) => [`at://self/cards.decay.flashcard.noteType/${nt.tid}`, nt]));
+  const deckMap = new Map(
+    allDecks.map((d) => [`at://self/cards.decay.flashcard.deck/${d.tid}`, d.name]),
+  );
+  const ntMap = new Map(
+    allNoteTypes.map((nt) => [`at://self/cards.decay.flashcard.noteType/${nt.tid}`, nt]),
+  );
   const statesByNote = new Map<string, ReviewStateRecord[]>();
   for (const rs of allStates) {
     const noteTid = rs.key.split("_")[0]!;
@@ -291,16 +299,25 @@ defineExpose({ startCreate, startCreateFiltered, startRename, startDelete });
       />
 
       <!-- Preview -->
-      <div v-if="filteredQuery.trim()" class="mb-3 border border-line rounded-[var(--r-sm)] overflow-hidden">
-        <div class="px-3 py-1.5 bg-canvas text-xs text-fg-muted border-b border-line flex justify-between">
-          <span>{{ previewTotal }} matching card{{ previewTotal === 1 ? '' : 's' }}</span>
+      <div
+        v-if="filteredQuery.trim()"
+        class="mb-3 border border-line rounded-[var(--r-sm)] overflow-hidden"
+      >
+        <div
+          class="px-3 py-1.5 bg-canvas text-xs text-fg-muted border-b border-line flex justify-between"
+        >
+          <span>{{ previewTotal }} matching card{{ previewTotal === 1 ? "" : "s" }}</span>
           <span v-if="previewTotal > 20" class="text-fg-subtle">showing first 20</span>
         </div>
         <div v-if="previewRows.length > 0" class="max-h-40 overflow-y-auto">
           <table class="w-full text-xs">
             <tbody>
-              <tr v-for="(row, i) in previewRows" :key="i" class="border-b border-line last:border-0">
-                <td class="px-2 py-1 truncate max-w-[200px]">{{ row.front || '—' }}</td>
+              <tr
+                v-for="(row, i) in previewRows"
+                :key="i"
+                class="border-b border-line last:border-0"
+              >
+                <td class="px-2 py-1 truncate max-w-[200px]">{{ row.front || "—" }}</td>
                 <td class="px-2 py-1 text-fg-muted truncate max-w-[100px]">{{ row.deck }}</td>
                 <td class="px-2 py-1 text-fg-muted">{{ row.phase }}</td>
               </tr>
@@ -359,13 +376,17 @@ defineExpose({ startCreate, startCreateFiltered, startRename, startDelete });
     @click.self="cancel"
   >
     <div class="modal-panel p-5 w-full max-w-sm">
-      <h3 class="font-semibold tracking-tight mb-2">{{ isFilteredTarget ? 'Delete filtered deck' : 'Delete deck' }}</h3>
+      <h3 class="font-semibold tracking-tight mb-2">
+        {{ isFilteredTarget ? "Delete filtered deck" : "Delete deck" }}
+      </h3>
       <p class="text-fg-muted text-sm mb-4">
         <template v-if="isFilteredTarget">
-          Delete the filtered deck "<span class="text-fg font-medium">{{ targetDeck?.name }}</span>"? The original cards will not be affected.
+          Delete the filtered deck "<span class="text-fg font-medium">{{ targetDeck?.name }}</span
+          >"? The original cards will not be affected.
         </template>
         <template v-else>
-          Delete "<span class="text-fg font-medium">{{ targetDeck?.name }}</span>" and all its notes? This cannot be undone.
+          Delete "<span class="text-fg font-medium">{{ targetDeck?.name }}</span
+          >" and all its notes? This cannot be undone.
         </template>
       </p>
 

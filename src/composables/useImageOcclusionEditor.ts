@@ -32,16 +32,20 @@ export function useImageOcclusionEditor(initialShapes: OcclusionShape[] = []) {
 
   // Watch shapes for changes and push snapshots (debounced via microtask)
   let snapshotPending = false;
-  watch(() => shapes.value, () => {
-    if (skipSnapshot || isDrawing.value) return;
-    if (!snapshotPending) {
-      snapshotPending = true;
-      queueMicrotask(() => {
-        snapshotPending = false;
-        pushSnapshot();
-      });
-    }
-  }, { deep: true });
+  watch(
+    () => shapes.value,
+    () => {
+      if (skipSnapshot || isDrawing.value) return;
+      if (!snapshotPending) {
+        snapshotPending = true;
+        queueMicrotask(() => {
+          snapshotPending = false;
+          pushSnapshot();
+        });
+      }
+    },
+    { deep: true },
+  );
 
   function undo() {
     if (undoStack.length <= 1) return;
@@ -202,8 +206,10 @@ export function useImageOcclusionEditor(initialShapes: OcclusionShape[] = []) {
     }
     const xs = pts.map((p) => p.x);
     const ys = pts.map((p) => p.y);
-    const minX = Math.min(...xs), minY = Math.min(...ys);
-    const maxX = Math.max(...xs), maxY = Math.max(...ys);
+    const minX = Math.min(...xs),
+      minY = Math.min(...ys);
+    const maxX = Math.max(...xs),
+      maxY = Math.max(...ys);
     const id = generateId();
     const shape: OcclusionShape = {
       id,
@@ -260,13 +266,18 @@ export function useImageOcclusionEditor(initialShapes: OcclusionShape[] = []) {
       const points = s.points.map((p, i) => (i === pointIndex ? { x, y } : p));
       const xs = points.map((p) => p.x);
       const ys = points.map((p) => p.y);
-      const minX = Math.min(...xs), minY = Math.min(...ys);
-      const maxX = Math.max(...xs), maxY = Math.max(...ys);
+      const minX = Math.min(...xs),
+        minY = Math.min(...ys);
+      const maxX = Math.max(...xs),
+        maxY = Math.max(...ys);
       return { ...s, points, x: minX, y: minY, width: maxX - minX, height: maxY - minY };
     });
   }
 
-  function resizeShape(id: string, bounds: { x: number; y: number; width: number; height: number }) {
+  function resizeShape(
+    id: string,
+    bounds: { x: number; y: number; width: number; height: number },
+  ) {
     shapes.value = shapes.value.map((s) => {
       if (s.id !== id) return s;
       // For polygons, translate points when bounding box moves

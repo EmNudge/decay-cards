@@ -21,10 +21,12 @@ function mockAgent(did: string, ops: AgentMockOps): Agent {
     com: {
       atproto: {
         repo: {
-          listRecords: ops.listRecords ?? vi.fn().mockResolvedValue({
-            headers: {},
-            data: { records: [], cursor: undefined },
-          }),
+          listRecords:
+            ops.listRecords ??
+            vi.fn().mockResolvedValue({
+              headers: {},
+              data: { records: [], cursor: undefined },
+            }),
           // unused but RecordsClient checks the surface
           putRecord: vi.fn(),
           deleteRecord: vi.fn(),
@@ -34,9 +36,7 @@ function mockAgent(did: string, ops: AgentMockOps): Agent {
         sync: {
           getLatestCommit:
             ops.getLatestCommit ??
-            vi
-              .fn()
-              .mockResolvedValue({ headers: {}, data: { cid: "c", rev: "r1" } }),
+            vi.fn().mockResolvedValue({ headers: {}, data: { cid: "c", rev: "r1" } }),
         },
       },
     },
@@ -126,9 +126,7 @@ describe("runReadSync — LWW", () => {
 
     const res = await runReadSync(agent);
     const deckResult =
-      res.status !== "unchanged"
-        ? res.collections.find((c) => c.nsid === `${NS}.deck`)
-        : undefined;
+      res.status !== "unchanged" ? res.collections.find((c) => c.nsid === `${NS}.deck`) : undefined;
     expect(deckResult?.inserted).toBe(1);
 
     const stored = await decksDb.get("deck-1");
@@ -425,10 +423,7 @@ describe("runReadSync — deferred strategies", () => {
       });
     });
     expect(stored.name).toBe("Remote"); // record-level LWW (remote newer)
-    expect(stored.fields.map((f: { id: string }) => f.id).sort()).toEqual([
-      "f0",
-      "f1",
-    ]);
+    expect(stored.fields.map((f: { id: string }) => f.id).sort()).toEqual(["f0", "f1"]);
 
     if (res.status !== "unchanged") {
       const r = res.collections.find((c) => c.nsid === `${NS}.noteType`);

@@ -4,7 +4,9 @@
   "ignore": [
     "src/**/__tests__/**",
     "src/ankiParser/**",
-    "src/db/schema.ts"
+    "src/db/schema.ts",
+    "src/lexicons/**",
+    "src/atproto/cardRender.ts"
   ],
   "ignoreExportsUsedInFile": true,
   "rules": {

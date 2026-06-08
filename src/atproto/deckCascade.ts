@@ -76,9 +76,7 @@ async function cascadeChildrenFor(deck: DeckRecord): Promise<void> {
   // Temporal guard: only cascade where note.createdAt < deck.deletedAt.
   // Post-delete notes survive (and currently keep their stale deck pointer;
   // TODO: auto-move to a default deck once one exists).
-  const toCascade = ourNotes.filter(
-    (n) => Date.parse(n.createdAt) < deletedAtMs,
-  );
+  const toCascade = ourNotes.filter((n) => Date.parse(n.createdAt) < deletedAtMs);
   if (toCascade.length === 0) return;
 
   const noteTids = toCascade.map((n) => n.tid);
@@ -94,12 +92,8 @@ async function cascadeChildrenFor(deck: DeckRecord): Promise<void> {
   const stateKeys = allStates
     .filter((rs) => noteTidSet.has(extractTid(rs.note)))
     .map((rs) => rs.key);
-  const logTids = allLogs
-    .filter((l) => noteTidSet.has(extractTid(l.note)))
-    .map((l) => l.tid);
-  const flagKeys = allFlags
-    .filter((f) => noteTidSet.has(extractTid(f.note)))
-    .map((f) => f.key);
+  const logTids = allLogs.filter((l) => noteTidSet.has(extractTid(l.note))).map((l) => l.tid);
+  const flagKeys = allFlags.filter((f) => noteTidSet.has(extractTid(f.note))).map((f) => f.key);
 
   if (stateKeys.length > 0) await reviewStateDb.deleteMany(stateKeys);
   for (const tid of logTids) await reviewLogsDb.delete(tid);

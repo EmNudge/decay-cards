@@ -119,9 +119,7 @@ async function openAddImageOcclusion() {
 }
 
 async function ensureIONoteType() {
-  const existing = noteTypes.value.find((nt) =>
-    nt.fields.some((f) => f.name === "Occlusions"),
-  );
+  const existing = noteTypes.value.find((nt) => nt.fields.some((f) => f.name === "Occlusions"));
   if (existing) return;
 
   const { generateTid } = await import("./scheduler/bridge");
@@ -207,21 +205,41 @@ async function handleImportFile(event: Event) {
             >
               + New
             </button>
-            <div v-if="showNewMenu" class="absolute right-0 top-full mt-1 w-44 bg-surface border border-line rounded-[var(--r-md)] shadow-lg py-1 z-50">
-              <button class="w-full text-left px-3 py-1.5 text-sm hover:bg-elevated" @click="openNewDeck">
+            <div
+              v-if="showNewMenu"
+              class="absolute right-0 top-full mt-1 w-44 bg-surface border border-line rounded-[var(--r-md)] shadow-lg py-1 z-50"
+            >
+              <button
+                class="w-full text-left px-3 py-1.5 text-sm hover:bg-elevated"
+                @click="openNewDeck"
+              >
                 New deck
               </button>
-              <button class="w-full text-left px-3 py-1.5 text-sm hover:bg-elevated" @click="openNewFilteredDeck">
+              <button
+                class="w-full text-left px-3 py-1.5 text-sm hover:bg-elevated"
+                @click="openNewFilteredDeck"
+              >
                 Filtered deck
               </button>
-              <button class="w-full text-left px-3 py-1.5 text-sm hover:bg-elevated" :disabled="decks.length === 0" @click="openAddNote">
+              <button
+                class="w-full text-left px-3 py-1.5 text-sm hover:bg-elevated"
+                :disabled="decks.length === 0"
+                @click="openAddNote"
+              >
                 New note
               </button>
-              <button class="w-full text-left px-3 py-1.5 text-sm hover:bg-elevated" :disabled="decks.length === 0" @click="openAddImageOcclusion">
+              <button
+                class="w-full text-left px-3 py-1.5 text-sm hover:bg-elevated"
+                :disabled="decks.length === 0"
+                @click="openAddImageOcclusion"
+              >
                 Image occlusion
               </button>
               <hr class="my-1 border-line" />
-              <button class="w-full text-left px-3 py-1.5 text-sm hover:bg-elevated" @click="openCsvImport">
+              <button
+                class="w-full text-left px-3 py-1.5 text-sm hover:bg-elevated"
+                @click="openCsvImport"
+              >
                 Import CSV
               </button>
             </div>
@@ -229,11 +247,7 @@ async function handleImportFile(event: Event) {
           <button v-if="activeView === 'decks'" class="btn-pill" @click="activeView = 'browse'">
             Browse
           </button>
-          <button
-            v-if="activeView === 'decks'"
-            class="btn-pill"
-            @click="triggerImport"
-          >
+          <button v-if="activeView === 'decks'" class="btn-pill" @click="triggerImport">
             Import
           </button>
           <input
@@ -277,7 +291,12 @@ async function handleImportFile(event: Event) {
     </header>
 
     <main>
-      <DeckList v-if="activeView === 'decks'" :key="deckListKey" @study="startStudy" @settings="openSettings" />
+      <DeckList
+        v-if="activeView === 'decks'"
+        :key="deckListKey"
+        @study="startStudy"
+        @settings="openSettings"
+      />
 
       <StudyView
         v-else-if="activeView === 'study' && activeDeckTid && activeDeckUri"
@@ -306,13 +325,27 @@ async function handleImportFile(event: Event) {
       :note="null"
       :decks="decks"
       :deck-uri="activeDeckUri ?? undefined"
-      :note-types="ioCreateMode ? noteTypes.filter(nt => nt.fields.some(f => f.name === 'Occlusions')) : noteTypes"
-      :initial-note-type-tid="ioCreateMode ? noteTypes.find(nt => nt.fields.some(f => f.name === 'Occlusions'))?.tid : undefined"
+      :note-types="
+        ioCreateMode
+          ? noteTypes.filter((nt) => nt.fields.some((f) => f.name === 'Occlusions'))
+          : noteTypes
+      "
+      :initial-note-type-tid="
+        ioCreateMode
+          ? noteTypes.find((nt) => nt.fields.some((f) => f.name === 'Occlusions'))?.tid
+          : undefined
+      "
       @saved="handleNoteSaved"
       @close="showNoteEditor = false"
     />
 
-    <DeckManager ref="deckManagerRef" @done="loadDecks(); deckListKey++" />
+    <DeckManager
+      ref="deckManagerRef"
+      @done="
+        loadDecks();
+        deckListKey++;
+      "
+    />
 
     <LoginView v-if="showLogin" @close="showLogin = false" />
   </div>

@@ -2,19 +2,22 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 import type { Plugin } from "vite";
 
-/**
- * Substitutes the __ALLOWED_PARENT_ORIGINS__ marker inside
- * `public/render-shell.html` with the configured parent origin at
- * production-build time. In dev (no override), the shell falls through
- * to its same-origin check.
- *
- * Set VITE_RENDER_SHELL_PARENT_ORIGIN to the app's origin
- * (e.g. "https://decay.cards") so the shell rejects postMessages from
- * anywhere else.
- */
-export function renderShellSubstitution(): Plugin {
-  const parentOrigin = process.env["VITE_RENDER_SHELL_PARENT_ORIGIN"] ?? "";
+interface Options {
+  /**
+   * The parent origin that the shell will accept postMessages from.
+   * Substituted into `dist/render-shell.html` at build time. Empty
+   * string skips substitution (the shell falls back to a same-origin
+   * check, useful for dev / preview).
+   */
+  parentOrigin: string;
+}
 
+/**
+ * Substitutes the `__ALLOWED_PARENT_ORIGINS__` marker inside the built
+ * `render-shell.html` with the configured parent origin. Read via Vite's
+ * `loadEnv` from `.env`, then passed in from `vite.config.ts`.
+ */
+export function renderShellSubstitution({ parentOrigin }: Options): Plugin {
   return {
     name: "render-shell-substitution",
     apply: "build",
@@ -29,8 +32,6 @@ export function renderShellSubstitution(): Plugin {
         );
         await fs.writeFile(out, replaced);
       } catch (err) {
-        // Non-fatal: if dist/render-shell.html isn't present (e.g. when
-        // building a non-app target) we just skip.
         if ((err as NodeJS.ErrnoException).code !== "ENOENT") throw err;
       }
     },

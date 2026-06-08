@@ -8,7 +8,16 @@
       "key": "tid",
       "record": {
         "type": "object",
-        "required": ["note", "deck", "templateId", "answer", "phase", "algorithm", "reviewedAt", "resolvedDate"],
+        "required": [
+          "note",
+          "deck",
+          "templateId",
+          "answer",
+          "phase",
+          "algorithm",
+          "reviewedAt",
+          "resolvedDate"
+        ],
         "properties": {
           "note": { "type": "string", "format": "at-uri" },
           "deck": { "type": "string", "format": "at-uri" },

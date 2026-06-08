@@ -107,8 +107,12 @@ export function useDecks() {
     const allNoteTypes = await noteTypesDb.getAll();
     const allStates = await reviewStateDb.getAll();
 
-    const deckNameMap = new Map(allDecks.map((d) => [`at://self/cards.decay.flashcard.deck/${d.tid}`, d.name]));
-    const ntMap = new Map(allNoteTypes.map((nt) => [`at://self/cards.decay.flashcard.noteType/${nt.tid}`, nt]));
+    const deckNameMap = new Map(
+      allDecks.map((d) => [`at://self/cards.decay.flashcard.deck/${d.tid}`, d.name]),
+    );
+    const ntMap = new Map(
+      allNoteTypes.map((nt) => [`at://self/cards.decay.flashcard.noteType/${nt.tid}`, nt]),
+    );
     const statesByNote = new Map<string, ReviewStateRecord[]>();
     for (const rs of allStates) {
       const noteTid = rs.key.split("_")[0]!;

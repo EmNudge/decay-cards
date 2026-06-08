@@ -52,9 +52,7 @@ export const syncStatus = {
   deadLetterCount: readonly(deadLetterCount),
   migrationProgress: readonly(migrationProgress),
   /** Convenience: any signal that something is wrong. */
-  hasError: computed(
-    () => lastError.value !== null || deadLetterCount.value > 0,
-  ),
+  hasError: computed(() => lastError.value !== null || deadLetterCount.value > 0),
 };
 
 interface ActiveScheduler {
@@ -75,10 +73,7 @@ const active = shallowRef<ActiveScheduler | null>(null);
  * Start the scheduler for a signed-in agent. Idempotent — calling twice
  * with the same agent is a no-op; calling with a different agent restarts.
  */
-export function startSyncScheduler(
-  agent: Agent,
-  opts: SchedulerOptions = {},
-): void {
+export function startSyncScheduler(agent: Agent, opts: SchedulerOptions = {}): void {
   if (active.value) {
     if (active.value.agent === agent) return;
     stopSyncScheduler();
