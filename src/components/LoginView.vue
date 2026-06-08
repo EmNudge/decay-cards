@@ -1,12 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
-import {
-  startSignIn,
-  endSignOut,
-  currentDid,
-  isSignedIn,
-  getAgent,
-} from "../atproto/client";
+import { startSignIn, endSignOut, currentDid, isSignedIn, getAgent } from "../atproto/client";
 import { runSync, syncStatus } from "../atproto/scheduler";
 import { deadLettersDb } from "../db/deadLetters";
 import type { DeadLetterEntry } from "../db/schema";
@@ -79,8 +73,13 @@ async function onClearDeadLetters() {
 </script>
 
 <template>
-  <div class="fixed inset-0 z-40 bg-black/40 flex items-center justify-center p-4" @click.self="$emit('close')">
-    <div class="bg-surface border border-line rounded-[var(--r-md)] shadow-xl w-full max-w-sm p-5 max-h-[90vh] overflow-y-auto">
+  <div
+    class="fixed inset-0 z-40 bg-black/40 flex items-center justify-center p-4"
+    @click.self="$emit('close')"
+  >
+    <div
+      class="bg-surface border border-line rounded-[var(--r-md)] shadow-xl w-full max-w-sm p-5 max-h-[90vh] overflow-y-auto"
+    >
       <div class="flex items-center justify-between mb-4">
         <h2 class="text-base font-semibold">AT Protocol Account</h2>
         <button class="btn-icon" aria-label="Close" @click="$emit('close')">×</button>
@@ -131,7 +130,8 @@ async function onClearDeadLetters() {
               class="text-red-500 underline-offset-2 hover:underline"
               @click="showDeadLetters = !showDeadLetters"
             >
-              {{ deadLetters.length }} failed sync {{ deadLetters.length === 1 ? "entry" : "entries" }}
+              {{ deadLetters.length }} failed sync
+              {{ deadLetters.length === 1 ? "entry" : "entries" }}
             </button>
             <div v-if="showDeadLetters" class="mt-2 space-y-2 max-h-40 overflow-y-auto">
               <div
@@ -156,9 +156,7 @@ async function onClearDeadLetters() {
           </div>
         </div>
 
-        <button class="btn-pill w-full" :disabled="busy" @click="onSignOut">
-          Sign out
-        </button>
+        <button class="btn-pill w-full" :disabled="busy" @click="onSignOut">Sign out</button>
       </div>
 
       <form v-else class="space-y-3" @submit.prevent="onSignIn">

@@ -5,11 +5,7 @@ import { notesDb } from "../db/notes";
 import { noteTypesDb } from "../db/noteTypes";
 import { reviewStateDb } from "../db/reviewState";
 import { mediaDb, normalizeMediaKey } from "../db/media";
-import type {
-  DeckRecord,
-  NoteRecord,
-  ReviewStateRecord,
-} from "../db/schema";
+import type { DeckRecord, NoteRecord, ReviewStateRecord } from "../db/schema";
 
 /**
  * Export a deck (and optionally its subdecks) as an .apkg file.
@@ -46,8 +42,8 @@ export async function exportDeckAsApkg(deckTid: string): Promise<Blob> {
 
   // Collect note types used by these notes
   const usedNoteTypeUris = new Set(notes.map((n) => n.noteType));
-  const noteTypes = allNoteTypes.filter(
-    (nt) => usedNoteTypeUris.has(`at://self/cards.decay.flashcard.noteType/${nt.tid}`),
+  const noteTypes = allNoteTypes.filter((nt) =>
+    usedNoteTypeUris.has(`at://self/cards.decay.flashcard.noteType/${nt.tid}`),
   );
 
   // Collect review states for these notes
@@ -146,8 +142,11 @@ export async function exportDeckAsApkg(deckTid: string): Promise<Blob> {
         description: f.description ?? "",
         media: [],
       })),
-      css: nt.css ?? ".card { font-family: arial; font-size: 20px; text-align: center; color: black; background-color: white; }",
-      latexPre: "\\documentclass[12pt]{article}\n\\special{papersize=3in,5in}\n\\usepackage[utf8]{inputenc}\n\\usepackage{amssymb,amsmath}\n\\pagestyle{empty}\n\\setlength{\\parindent}{0in}\n\\begin{document}\n",
+      css:
+        nt.css ??
+        ".card { font-family: arial; font-size: 20px; text-align: center; color: black; background-color: white; }",
+      latexPre:
+        "\\documentclass[12pt]{article}\n\\special{papersize=3in,5in}\n\\usepackage[utf8]{inputenc}\n\\usepackage{amssymb,amsmath}\n\\pagestyle{empty}\n\\setlength{\\parindent}{0in}\n\\begin{document}\n",
       latexPost: "\\end{document}",
       latexsvg: false,
       req: nt.templates.map((_, i) => [i, "any", [0]]),
@@ -155,7 +154,21 @@ export async function exportDeckAsApkg(deckTid: string): Promise<Blob> {
   }
 
   const decksJson: Record<string, any> = {
-    "1": { id: 1, name: "Default", mod: 0, usn: 0, lrnToday: [0, 0], revToday: [0, 0], newToday: [0, 0], timeToday: [0, 0], collapsed: false, browserCollapsed: false, desc: "", dyn: 0, conf: 1 },
+    "1": {
+      id: 1,
+      name: "Default",
+      mod: 0,
+      usn: 0,
+      lrnToday: [0, 0],
+      revToday: [0, 0],
+      newToday: [0, 0],
+      timeToday: [0, 0],
+      collapsed: false,
+      browserCollapsed: false,
+      desc: "",
+      dyn: 0,
+      conf: 1,
+    },
   };
   for (const deck of deckRecords) {
     const did = deckIdMap.get(deck.tid)!;
@@ -177,17 +190,53 @@ export async function exportDeckAsApkg(deckTid: string): Promise<Blob> {
   }
 
   const dconf: Record<string, any> = {
-    "1": { id: 1, name: "Default", new: { delays: [1, 10], ints: [1, 4, 0], initialFactor: 2500, order: 1, perDay: 20 }, rev: { perDay: 200, ease4: 1.3, ivlFct: 1, maxIvl: 36500, fuzz: 0.05 }, lapse: { delays: [10], mult: 0, minInt: 1, leechFails: 8, leechAction: 0 }, maxTaken: 60, timer: 0, autoplay: true, replayq: true, mod: 0, usn: 0 },
+    "1": {
+      id: 1,
+      name: "Default",
+      new: { delays: [1, 10], ints: [1, 4, 0], initialFactor: 2500, order: 1, perDay: 20 },
+      rev: { perDay: 200, ease4: 1.3, ivlFct: 1, maxIvl: 36500, fuzz: 0.05 },
+      lapse: { delays: [10], mult: 0, minInt: 1, leechFails: 8, leechAction: 0 },
+      maxTaken: 60,
+      timer: 0,
+      autoplay: true,
+      replayq: true,
+      mod: 0,
+      usn: 0,
+    },
   };
 
   const crt = Math.floor(Date.now() / 1000) - 86400;
   // col columns: id, crt, mod, scm, ver, dty, usn, ls, conf, models, decks, dconf, tags
-  const conf = JSON.stringify({ activeDecks: [1], curDeck: 1, newSpread: 0, collapseTime: 1200, timeLim: 0, estTimes: true, dueCounts: true, curModel: null, nextPos: 1, sortType: "noteFld", sortBackwards: false, addToCur: true });
+  const conf = JSON.stringify({
+    activeDecks: [1],
+    curDeck: 1,
+    newSpread: 0,
+    collapseTime: 1200,
+    timeLim: 0,
+    estTimes: true,
+    dueCounts: true,
+    curModel: null,
+    nextPos: 1,
+    sortType: "noteFld",
+    sortBackwards: false,
+    addToCur: true,
+  });
   const mod = Math.floor(Date.now() / 1000);
-  db.run(
-    "INSERT INTO col VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)",
-    [1, crt, mod, crt * 1000, 11, 0, -1, 0, conf, JSON.stringify(models), JSON.stringify(decksJson), JSON.stringify(dconf), "{}"],
-  );
+  db.run("INSERT INTO col VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)", [
+    1,
+    crt,
+    mod,
+    crt * 1000,
+    11,
+    0,
+    -1,
+    0,
+    conf,
+    JSON.stringify(models),
+    JSON.stringify(decksJson),
+    JSON.stringify(dconf),
+    "{}",
+  ]);
 
   // Insert notes
   for (const note of notes) {
@@ -195,18 +244,29 @@ export async function exportDeckAsApkg(deckTid: string): Promise<Blob> {
     const ntTid = note.noteType.split("/").pop()!;
     const mid = modelIdMap.get(ntTid)!;
     const nt = noteTypes.find((t) => t.tid === ntTid)!;
-    const flds = nt.fields.map((f) => {
-      const val = note.fields.find((nf) => nf.fieldId === f.id);
-      return val?.value ?? "";
-    }).join("\x1f");
+    const flds = nt.fields
+      .map((f) => {
+        const val = note.fields.find((nf) => nf.fieldId === f.id);
+        return val?.value ?? "";
+      })
+      .join("\x1f");
     const sfld = note.fields[0]?.value ?? "";
     const tags = (note.tags ?? []).join(" ");
     const mod = Math.floor(new Date(note.updatedAt).getTime() / 1000);
 
-    db.run(
-      "INSERT INTO notes VALUES(?,?,?,?,?,?,?,?,?,?,?)",
-      [nid, note.tid.slice(0, 10), mid, mod, -1, tags, flds, sfld, 0, 0, ""],
-    );
+    db.run("INSERT INTO notes VALUES(?,?,?,?,?,?,?,?,?,?,?)", [
+      nid,
+      note.tid.slice(0, 10),
+      mid,
+      mod,
+      -1,
+      tags,
+      flds,
+      sfld,
+      0,
+      0,
+      "",
+    ]);
   }
 
   // Insert cards
@@ -227,7 +287,9 @@ export async function exportDeckAsApkg(deckTid: string): Promise<Blob> {
     const did = deckIdMap.get(deckTidForNote) ?? deckIdMap.get(deckRecords[0]!.tid)!;
     const noteStates = statesByNote.get(note.tid) ?? [];
 
-    const templates = nt.isCloze ? getClozeTemplates(note) : nt.templates.map((t, i) => ({ id: t.id, ord: i }));
+    const templates = nt.isCloze
+      ? getClozeTemplates(note)
+      : nt.templates.map((t, i) => ({ id: t.id, ord: i }));
 
     for (const tmpl of templates) {
       const rs = noteStates.find((s) => s.templateId === tmpl.id);
@@ -268,12 +330,30 @@ export async function exportDeckAsApkg(deckTid: string): Promise<Blob> {
         }
       }
 
-      const mod = rs ? Math.floor(new Date(rs.updatedAt).getTime() / 1000) : Math.floor(Date.now() / 1000);
+      const mod = rs
+        ? Math.floor(new Date(rs.updatedAt).getTime() / 1000)
+        : Math.floor(Date.now() / 1000);
 
-      db.run(
-        "INSERT INTO cards VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
-        [cid, nid, did, ord, mod, -1, type, queue, due, ivl, factor, reps, lapses, 0, 0, 0, 0, ""],
-      );
+      db.run("INSERT INTO cards VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", [
+        cid,
+        nid,
+        did,
+        ord,
+        mod,
+        -1,
+        type,
+        queue,
+        due,
+        ivl,
+        factor,
+        reps,
+        lapses,
+        0,
+        0,
+        0,
+        0,
+        "",
+      ]);
     }
   }
 

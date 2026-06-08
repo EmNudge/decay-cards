@@ -121,30 +121,80 @@ export function parseOcclusionShapesForEditor(svgString: string): OcclusionShape
       const y = parseAttr(attrs, "y");
       const w = parseAttr(attrs, "width");
       const h = parseAttr(attrs, "height");
-      shapes.push(omitUndefined({ id: generateShapeId(), type: "rect" as const, ordinal, x, y, width: w, height: h, label }));
+      shapes.push(
+        omitUndefined({
+          id: generateShapeId(),
+          type: "rect" as const,
+          ordinal,
+          x,
+          y,
+          width: w,
+          height: h,
+          label,
+        }),
+      );
     } else if (tag === "ellipse") {
       const cx = parseAttr(attrs, "cx");
       const cy = parseAttr(attrs, "cy");
       const rx = parseAttr(attrs, "rx");
       const ry = parseAttr(attrs, "ry");
-      shapes.push(omitUndefined({ id: generateShapeId(), type: "ellipse" as const, ordinal, x: cx - rx, y: cy - ry, width: rx * 2, height: ry * 2, label }));
+      shapes.push(
+        omitUndefined({
+          id: generateShapeId(),
+          type: "ellipse" as const,
+          ordinal,
+          x: cx - rx,
+          y: cy - ry,
+          width: rx * 2,
+          height: ry * 2,
+          label,
+        }),
+      );
     } else if (tag === "circle") {
       const cx = parseAttr(attrs, "cx");
       const cy = parseAttr(attrs, "cy");
       const r = parseAttr(attrs, "r");
-      shapes.push(omitUndefined({ id: generateShapeId(), type: "ellipse" as const, ordinal, x: cx - r, y: cy - r, width: r * 2, height: r * 2, label }));
+      shapes.push(
+        omitUndefined({
+          id: generateShapeId(),
+          type: "ellipse" as const,
+          ordinal,
+          x: cx - r,
+          y: cy - r,
+          width: r * 2,
+          height: r * 2,
+          label,
+        }),
+      );
     } else if (tag === "polygon") {
       const pointsStr = parseStringAttr(attrs, "points") ?? "";
-      const points = pointsStr.split(/\s+/).filter(Boolean).map((p) => {
-        const [px, py] = p.split(",");
-        return { x: parseFloat(px ?? "0"), y: parseFloat(py ?? "0") };
-      });
+      const points = pointsStr
+        .split(/\s+/)
+        .filter(Boolean)
+        .map((p) => {
+          const [px, py] = p.split(",");
+          return { x: parseFloat(px ?? "0"), y: parseFloat(py ?? "0") };
+        });
       if (points.length >= 3) {
         const xs = points.map((p) => p.x);
         const ys = points.map((p) => p.y);
-        const minX = Math.min(...xs), minY = Math.min(...ys);
-        const maxX = Math.max(...xs), maxY = Math.max(...ys);
-        shapes.push(omitUndefined({ id: generateShapeId(), type: "polygon" as const, ordinal, x: minX, y: minY, width: maxX - minX, height: maxY - minY, label, points }));
+        const minX = Math.min(...xs),
+          minY = Math.min(...ys);
+        const maxX = Math.max(...xs),
+          maxY = Math.max(...ys);
+        shapes.push(
+          omitUndefined({
+            id: generateShapeId(),
+            type: "polygon" as const,
+            ordinal,
+            x: minX,
+            y: minY,
+            width: maxX - minX,
+            height: maxY - minY,
+            label,
+            points,
+          }),
+        );
       }
     }
   }
@@ -185,18 +235,26 @@ export function serializeShapesToSvg(
   for (const shape of shapes) {
     if (shape.type === "text") {
       // Text annotations — not masked, just labels on the image
-      elements.push(`<text data-ordinal="${shape.ordinal}" x="${shape.x}" y="${shape.y + shape.height}" font-size="${shape.height}" fill="#333"${shape.label ? ` data-label="${escapeAttr(shape.label)}"` : ""}>${escapeXml(shape.label ?? "")}</text>`);
+      elements.push(
+        `<text data-ordinal="${shape.ordinal}" x="${shape.x}" y="${shape.y + shape.height}" font-size="${shape.height}" fill="#333"${shape.label ? ` data-label="${escapeAttr(shape.label)}"` : ""}>${escapeXml(shape.label ?? "")}</text>`,
+      );
     } else if (shape.type === "polygon" && shape.points) {
       const pts = shape.points.map((p) => `${p.x},${p.y}`).join(" ");
-      elements.push(`<polygon data-ordinal="${shape.ordinal}" points="${pts}" fill="#ffeba2" fill-opacity="1" stroke="#2d2d2d" stroke-width="1"${shape.label ? ` data-label="${escapeAttr(shape.label)}"` : ""}/>`);
+      elements.push(
+        `<polygon data-ordinal="${shape.ordinal}" points="${pts}" fill="#ffeba2" fill-opacity="1" stroke="#2d2d2d" stroke-width="1"${shape.label ? ` data-label="${escapeAttr(shape.label)}"` : ""}/>`,
+      );
     } else if (shape.type === "ellipse") {
       const cx = shape.x + shape.width / 2;
       const cy = shape.y + shape.height / 2;
       const rx = shape.width / 2;
       const ry = shape.height / 2;
-      elements.push(`<ellipse data-ordinal="${shape.ordinal}" cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="#ffeba2" fill-opacity="1" stroke="#2d2d2d" stroke-width="1"${shape.label ? ` data-label="${escapeAttr(shape.label)}"` : ""}/>`);
+      elements.push(
+        `<ellipse data-ordinal="${shape.ordinal}" cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="#ffeba2" fill-opacity="1" stroke="#2d2d2d" stroke-width="1"${shape.label ? ` data-label="${escapeAttr(shape.label)}"` : ""}/>`,
+      );
     } else {
-      elements.push(`<rect data-ordinal="${shape.ordinal}" x="${shape.x}" y="${shape.y}" width="${shape.width}" height="${shape.height}" fill="#ffeba2" fill-opacity="1" stroke="#2d2d2d" stroke-width="1"${shape.label ? ` data-label="${escapeAttr(shape.label)}"` : ""}/>`);
+      elements.push(
+        `<rect data-ordinal="${shape.ordinal}" x="${shape.x}" y="${shape.y}" width="${shape.width}" height="${shape.height}" fill="#ffeba2" fill-opacity="1" stroke="#2d2d2d" stroke-width="1"${shape.label ? ` data-label="${escapeAttr(shape.label)}"` : ""}/>`,
+      );
     }
   }
 

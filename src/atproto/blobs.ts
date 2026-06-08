@@ -41,10 +41,7 @@ async function openCache(): Promise<Cache | null> {
   }
 }
 
-export async function uploadBlob(
-  agent: Agent,
-  blob: Blob,
-): Promise<BlobRefValue> {
+export async function uploadBlob(agent: Agent, blob: Blob): Promise<BlobRefValue> {
   return uploadLimiter.run(async () => {
     const res = await agent.com.atproto.repo.uploadBlob(blob, {
       encoding: blob.type || "application/octet-stream",

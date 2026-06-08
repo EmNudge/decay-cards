@@ -1,0 +1,64 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  # Cancel in-progress runs for the same PR / branch when a new push lands.
+  # Pushes to main always run to completion so we don't lose deploy signals.
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  check:
+    name: Lint, typecheck, test, build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        # Reads the pnpm version from package.json's `packageManager` field.
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint (oxlint)
+        run: pnpm lint
+
+      - name: Format check (oxfmt)
+        run: pnpm format:check
+
+      - name: Dead-code check (knip)
+        run: pnpm lint:knip
+
+      - name: Typecheck (tsgo)
+        run: pnpm typecheck
+
+      - name: Unit + integration tests (vitest)
+        run: pnpm test:run
+
+      - name: Write build env file
+        # `.env` is gitignored, so materialize it from repo Actions variables
+        # (or hardcoded defaults). All values are public — they end up baked
+        # into the deployed bundle.
+        run: |
+          cat > .env <<EOF
+          VITE_OAUTH_CLIENT_ID=${{ vars.VITE_OAUTH_CLIENT_ID || 'https://decay.cards/client-metadata.json' }}
+          VITE_RENDER_SHELL_URL=${{ vars.VITE_RENDER_SHELL_URL || 'https://decaycards.emnudge.dev/' }}
+          VITE_RENDER_SHELL_PARENT_ORIGIN=${{ vars.VITE_RENDER_SHELL_PARENT_ORIGIN || 'https://decay.cards' }}
+          EOF
+
+      - name: Production build
+        run: pnpm build

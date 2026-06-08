@@ -5,12 +5,7 @@ import { deleteDb } from "../../db/schema";
 import { outboxDb } from "../../db/outbox";
 import { deadLettersDb } from "../../db/deadLetters";
 import { globalLimiter } from "../rateLimit";
-import {
-  drainOutbox,
-  resetDrainBackoff,
-  __setDrainClock,
-  __resetDrainClock,
-} from "../sync";
+import { drainOutbox, resetDrainBackoff, __setDrainClock, __resetDrainClock } from "../sync";
 
 interface AgentMockOps {
   applyWrites?: ReturnType<typeof vi.fn>;
@@ -87,22 +82,16 @@ describe("drainOutbox — atomic 4xx falls back to per-op", () => {
     await outboxDb.queuePut(COLLECTION, "bad", { tid: "bad" });
     await outboxDb.queuePut(COLLECTION, "good2", { tid: "good2" });
 
-    const applyWrites = vi
-      .fn()
-      .mockRejectedValue(new XRPCError(400, "InvalidRequest", "bad rec"));
-    const putRecord = vi
-      .fn()
-      .mockImplementation(({ rkey }: { rkey: string }) => {
-        if (rkey === "bad") {
-          return Promise.reject(
-            new XRPCError(400, "InvalidRequest", "field missing"),
-          );
-        }
-        return Promise.resolve({
-          headers: {},
-          data: { uri: `at://did:test/${COLLECTION}/${rkey}`, cid: "x" },
-        });
+    const applyWrites = vi.fn().mockRejectedValue(new XRPCError(400, "InvalidRequest", "bad rec"));
+    const putRecord = vi.fn().mockImplementation(({ rkey }: { rkey: string }) => {
+      if (rkey === "bad") {
+        return Promise.reject(new XRPCError(400, "InvalidRequest", "field missing"));
+      }
+      return Promise.resolve({
+        headers: {},
+        data: { uri: `at://did:test/${COLLECTION}/${rkey}`, cid: "x" },
       });
+    });
 
     const agent = mockAgent("did:test", { applyWrites, putRecord });
 
@@ -128,9 +117,7 @@ describe("drainOutbox — transient errors trigger backoff", () => {
     let t = 1_000_000;
     __setDrainClock(() => t);
 
-    const applyWrites = vi
-      .fn()
-      .mockRejectedValue(new XRPCError(503, "ServiceUnavailable", "down"));
+    const applyWrites = vi.fn().mockRejectedValue(new XRPCError(503, "ServiceUnavailable", "down"));
     const agent = mockAgent("did:test", { applyWrites });
 
     const res = await drainOutbox(agent);
@@ -162,9 +149,7 @@ describe("drainOutbox — transient errors trigger backoff", () => {
     let t = 1_000_000;
     __setDrainClock(() => t);
 
-    const applyWrites = vi
-      .fn()
-      .mockRejectedValue(new XRPCError(503, "ServiceUnavailable", "down"));
+    const applyWrites = vi.fn().mockRejectedValue(new XRPCError(503, "ServiceUnavailable", "down"));
     const agent = mockAgent("did:test", { applyWrites });
 
     const first = await drainOutbox(agent);
@@ -188,9 +173,7 @@ describe("drainOutbox — transient errors trigger backoff", () => {
     let t = 1_000_000;
     __setDrainClock(() => t);
 
-    const applyWrites = vi
-      .fn()
-      .mockRejectedValue(new XRPCError(503, "ServiceUnavailable", "down"));
+    const applyWrites = vi.fn().mockRejectedValue(new XRPCError(503, "ServiceUnavailable", "down"));
     const agent = mockAgent("did:test", { applyWrites });
 
     await drainOutbox(agent);

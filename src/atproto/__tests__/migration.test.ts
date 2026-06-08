@@ -135,10 +135,7 @@ describe("migrateToPhase2 — first run", () => {
     await migrateToPhase2();
 
     const logEntries = await outboxDb.getByCollection(`${NS}.reviewLog`);
-    expect(logEntries.map((e) => e.recordKey)).toEqual([
-      "log-2025-01",
-      "log-2025-02",
-    ]);
+    expect(logEntries.map((e) => e.recordKey)).toEqual(["log-2025-01", "log-2025-02"]);
   });
 
   it("marks migration as done after successful enqueue", async () => {
@@ -216,9 +213,7 @@ describe("migrateToPhase2 — progress reporting", () => {
     });
     // Counts are monotonically non-decreasing.
     for (let i = 1; i < progresses.length; i++) {
-      expect(progresses[i]!.queued).toBeGreaterThanOrEqual(
-        progresses[i - 1]!.queued,
-      );
+      expect(progresses[i]!.queued).toBeGreaterThanOrEqual(progresses[i - 1]!.queued);
     }
   });
 });

@@ -6,7 +6,7 @@
   "packageManager": "pnpm@10.33.0",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && node scripts/dist-split.mjs",
     "preview": "vite preview",
     "typecheck": "tsgo -b",
     "lint": "oxlint --type-aware src",

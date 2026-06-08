@@ -25,10 +25,7 @@ export const syncStateDb = {
     return get<SyncStateEntry>(STORE, collection);
   },
 
-  async setForCollection(
-    collection: string,
-    rev?: string,
-  ): Promise<void> {
+  async setForCollection(collection: string, rev?: string): Promise<void> {
     const entry: SyncStateEntry = {
       collection,
       ...(rev !== undefined && { lastRev: rev }),

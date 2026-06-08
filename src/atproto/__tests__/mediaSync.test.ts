@@ -42,11 +42,8 @@ function mockAgent(did: string, mocks: AgentMocks = {}): Agent {
               headers: {},
               data: { uri: "at://did:test/cards.decay.flashcard.media/img.png", cid: "x" },
             }),
-          deleteRecord:
-            mocks.deleteRecord ??
-            vi.fn().mockResolvedValue({ headers: {}, data: {} }),
-          applyWrites:
-            mocks.applyWrites ?? vi.fn().mockResolvedValue({ headers: {}, data: {} }),
+          deleteRecord: mocks.deleteRecord ?? vi.fn().mockResolvedValue({ headers: {}, data: {} }),
+          applyWrites: mocks.applyWrites ?? vi.fn().mockResolvedValue({ headers: {}, data: {} }),
           getRecord: vi.fn(),
           listRecords: vi.fn(),
         },
@@ -146,9 +143,7 @@ describe("drainOutbox — media put", () => {
     });
 
     const { XRPCError } = await import("@atproto/api");
-    const uploadBlob = vi
-      .fn()
-      .mockRejectedValue(new XRPCError(400, "InvalidRequest", "too big"));
+    const uploadBlob = vi.fn().mockRejectedValue(new XRPCError(400, "InvalidRequest", "too big"));
     const agent = mockAgent("did:test", { uploadBlob });
 
     const result = await drainOutbox(agent);

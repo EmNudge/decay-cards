@@ -81,11 +81,7 @@ export const outboxDb = {
   },
 
   /** Queue multiple delete operations in a single transaction. */
-  async queueDeleteMany(
-    collection: string,
-    recordKeys: string[],
-    groupId?: string,
-  ): Promise<void> {
+  async queueDeleteMany(collection: string, recordKeys: string[], groupId?: string): Promise<void> {
     if (recordKeys.length === 0) return;
     const now = new Date().toISOString();
     const db = await getDb();

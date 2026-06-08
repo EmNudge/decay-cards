@@ -48,9 +48,12 @@ describe("outbox wiring — every db module queues to outbox on put/delete", () 
 
     const pending = await outboxDb.getByCollection(`${NS}.note`);
     expect(pending.length).toBe(3);
-    expect(pending.filter((p) => p.op === "delete").map((p) => p.recordKey).sort()).toEqual(
-      ["n1", "n2"],
-    );
+    expect(
+      pending
+        .filter((p) => p.op === "delete")
+        .map((p) => p.recordKey)
+        .sort(),
+    ).toEqual(["n1", "n2"]);
   });
 
   it("noteTypesDb.put queues", async () => {

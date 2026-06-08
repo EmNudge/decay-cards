@@ -177,9 +177,7 @@ export class RecordsClient {
   async applyWrites(writes: WriteOp[]): Promise<void> {
     if (writes.length === 0) return;
     if (writes.length > MAX_BATCH_OPS) {
-      throw new Error(
-        `applyWrites: ${writes.length} ops exceeds limit ${MAX_BATCH_OPS}`,
-      );
+      throw new Error(`applyWrites: ${writes.length} ops exceeds limit ${MAX_BATCH_OPS}`);
     }
     return this.limiter.run(async () => {
       try {

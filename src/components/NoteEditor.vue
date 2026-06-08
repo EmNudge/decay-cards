@@ -35,7 +35,10 @@ const emit = defineEmits<{
 }>();
 
 const isCreate = computed(() => !props.note);
-const selectedDeckUri = ref(props.deckUri ?? (props.decks[0] ? `at://self/cards.decay.flashcard.deck/${props.decks[0].tid}` : ""));
+const selectedDeckUri = ref(
+  props.deckUri ??
+    (props.decks[0] ? `at://self/cards.decay.flashcard.deck/${props.decks[0].tid}` : ""),
+);
 const selectedNoteTypeTid = ref(props.initialNoteTypeTid ?? props.noteTypes[0]?.tid ?? "");
 const fields = ref<Record<string, string>>({});
 const tags = ref<string[]>([]);
@@ -177,7 +180,12 @@ async function save() {
   if (isIO.value && ioShapes.value.length > 0) {
     const occField = nt.fields.find((f) => f.name === IO_FIELD_NAMES.occlusions);
     if (occField) {
-      fields.value[occField.id] = serializeShapesToSvg(ioShapes.value, ioImageWidth.value, ioImageHeight.value, ioMode.value);
+      fields.value[occField.id] = serializeShapesToSvg(
+        ioShapes.value,
+        ioImageWidth.value,
+        ioImageHeight.value,
+        ioMode.value,
+      );
     }
 
     // Save image file to media collection if it's a new file
@@ -256,7 +264,13 @@ function fieldLabel(fieldId: string): string {
           <div class="flex-1">
             <label class="field-label">Deck</label>
             <select v-model="selectedDeckUri" class="field-input">
-              <option v-for="d in decks" :key="d.tid" :value="`at://self/cards.decay.flashcard.deck/${d.tid}`">{{ d.name }}</option>
+              <option
+                v-for="d in decks"
+                :key="d.tid"
+                :value="`at://self/cards.decay.flashcard.deck/${d.tid}`"
+              >
+                {{ d.name }}
+              </option>
             </select>
           </div>
           <div v-if="noteTypes.length > 1" class="flex-1">
@@ -270,11 +284,21 @@ function fieldLabel(fieldId: string): string {
         <!-- Image Occlusion -->
         <template v-if="isIO">
           <!-- Image picker (when no image loaded yet) -->
-          <div v-if="!ioImageUrl" class="border-2 border-dashed border-line-strong rounded-[var(--r-lg)] p-10 text-center cursor-pointer hover:border-accent hover:bg-accent-soft" @click="ioFileInput?.click()">
+          <div
+            v-if="!ioImageUrl"
+            class="border-2 border-dashed border-line-strong rounded-[var(--r-lg)] p-10 text-center cursor-pointer hover:border-accent hover:bg-accent-soft"
+            @click="ioFileInput?.click()"
+          >
             <div class="text-3xl mb-2 opacity-50">🖼</div>
             <p class="font-medium mb-1">Select an image</p>
             <p class="text-sm text-fg-muted">Click to choose or paste from clipboard</p>
-            <input ref="ioFileInput" type="file" accept="image/*" class="hidden" @change="onIOImageSelected">
+            <input
+              ref="ioFileInput"
+              type="file"
+              accept="image/*"
+              class="hidden"
+              @change="onIOImageSelected"
+            />
           </div>
 
           <!-- IO Editor (when image is loaded) -->
@@ -286,12 +310,19 @@ function fieldLabel(fieldId: string): string {
               @update:model-value="ioShapes = $event"
               @update:occlusion-mode="ioMode = $event"
             />
-            <p class="text-xs text-fg-muted">Draw rectangles or ellipses to create masks. Each mask generates one card.</p>
+            <p class="text-xs text-fg-muted">
+              Draw rectangles or ellipses to create masks. Each mask generates one card.
+            </p>
           </template>
 
           <!-- Header and Back Extra fields -->
           <template v-for="(_, fieldId) in fields" :key="fieldId">
-            <div v-if="fieldLabel(String(fieldId)) === 'Header' || fieldLabel(String(fieldId)) === 'Back Extra'">
+            <div
+              v-if="
+                fieldLabel(String(fieldId)) === 'Header' ||
+                fieldLabel(String(fieldId)) === 'Back Extra'
+              "
+            >
               <label class="field-label">{{ fieldLabel(String(fieldId)) }}</label>
               <TiptapEditor
                 :model-value="fields[fieldId] ?? ''"

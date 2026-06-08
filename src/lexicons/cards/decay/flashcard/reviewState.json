@@ -8,7 +8,16 @@
       "key": "any",
       "record": {
         "type": "object",
-        "required": ["note", "templateId", "algorithm", "phase", "reps", "lapses", "createdAt", "updatedAt"],
+        "required": [
+          "note",
+          "templateId",
+          "algorithm",
+          "phase",
+          "reps",
+          "lapses",
+          "createdAt",
+          "updatedAt"
+        ],
         "properties": {
           "note": { "type": "string", "format": "at-uri" },
           "templateId": { "type": "string" },

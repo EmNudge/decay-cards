@@ -25,7 +25,9 @@ const trimEnd = ref(1);
 // Cut selection (0-1 normalized) — a separate region to cut out
 const selStart = ref<number | null>(null);
 const selEnd = ref<number | null>(null);
-const hasSelection = computed(() => selStart.value !== null && selEnd.value !== null && selStart.value !== selEnd.value);
+const hasSelection = computed(
+  () => selStart.value !== null && selEnd.value !== null && selStart.value !== selEnd.value,
+);
 
 // Playback
 const isPlaying = ref(false);
@@ -110,7 +112,8 @@ function drawWaveform() {
 
   for (let i = 0; i < width; i++) {
     const start = i * step;
-    let min = 1, max = -1;
+    let min = 1,
+      max = -1;
     for (let j = 0; j < step && start + j < data.length; j++) {
       const val = data[start + j]!;
       if (val < min) min = val;
@@ -241,9 +244,10 @@ function startPlayback() {
     drawWaveform();
   };
 
-  const offset = playbackPos.value >= trimStart.value && playbackPos.value < trimEnd.value
-    ? playbackPos.value * duration.value
-    : startSec;
+  const offset =
+    playbackPos.value >= trimStart.value && playbackPos.value < trimEnd.value
+      ? playbackPos.value * duration.value
+      : startSec;
 
   const remainingDuration = endSec - offset;
   sourceNode.start(0, offset, remainingDuration);
@@ -383,7 +387,11 @@ async function doSave() {
   const source = offlineCtx.createBufferSource();
   source.buffer = buffer;
   source.connect(offlineCtx.destination);
-  source.start(0, trimStart.value * buffer.duration, (trimEnd.value - trimStart.value) * buffer.duration);
+  source.start(
+    0,
+    trimStart.value * buffer.duration,
+    (trimEnd.value - trimStart.value) * buffer.duration,
+  );
 
   const rendered = await offlineCtx.startRendering();
 
@@ -471,7 +479,7 @@ function encodeAsWebm(buffer: AudioBuffer): Promise<Blob> {
           <canvas
             ref="canvasRef"
             class="w-full h-24 rounded-[var(--r-sm)] bg-canvas border border-line"
-            style="touch-action: none; -webkit-user-drag: none;"
+            style="touch-action: none; -webkit-user-drag: none"
             draggable="false"
           />
         </div>
@@ -504,11 +512,7 @@ function encodeAsWebm(buffer: AudioBuffer): Promise<Blob> {
           >
             ↩ Undo
           </button>
-          <button
-            v-if="hasSelection"
-            class="btn-secondary text-xs"
-            @click="clearSelection"
-          >
+          <button v-if="hasSelection" class="btn-secondary text-xs" @click="clearSelection">
             Clear selection
           </button>
 
@@ -521,7 +525,8 @@ function encodeAsWebm(buffer: AudioBuffer): Promise<Blob> {
 
         <p class="text-xs text-fg-muted">
           Drag <span style="color: var(--c-accent)">blue handles</span> to set trim bounds for save.
-          Click-drag the waveform to make a <span style="color: var(--c-again)">red selection</span> to cut.
+          Click-drag the waveform to make a
+          <span style="color: var(--c-again)">red selection</span> to cut.
         </p>
       </div>
 
@@ -549,6 +554,8 @@ function encodeAsWebm(buffer: AudioBuffer): Promise<Blob> {
   animation: spin 0.6s linear infinite;
 }
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style>

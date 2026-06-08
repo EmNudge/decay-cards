@@ -62,10 +62,7 @@ export async function renderIntoShell(
   iframe.contentWindow?.postMessage(msg, shellOrigin, transferables(media));
 }
 
-export function broadcastThemeToShell(
-  iframe: HTMLIFrameElement,
-  theme: "light" | "dark",
-): void {
+export function broadcastThemeToShell(iframe: HTMLIFrameElement, theme: "light" | "dark"): void {
   const shellOrigin = getShellOrigin();
   if (!shellOrigin) return;
   iframe.contentWindow?.postMessage({ type: "theme", theme }, shellOrigin);

@@ -388,7 +388,9 @@ describe("Anki Parser Integration Tests", () => {
 
       expect(result.cards).toHaveLength(2);
       expect(result.notesTypes[0]?.kind).toBe(1);
-      expect(result.cards[0]?.values["Text"]).toBe("The capital of {{c1::France}} is {{c2::Paris}}");
+      expect(result.cards[0]?.values["Text"]).toBe(
+        "The capital of {{c1::France}} is {{c2::Paris}}",
+      );
       expect(result.cards[0]?.templates[0]?.qfmt).toBe("{{cloze:Text}}");
     });
   });

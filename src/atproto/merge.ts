@@ -38,10 +38,7 @@ import type {
  * Deletion of a field/template does not propagate across devices: as long
  * as either side still has the element, it survives.
  */
-export function mergeNoteType(
-  local: NoteTypeRecord,
-  remote: NoteTypeRecord,
-): NoteTypeRecord {
+export function mergeNoteType(local: NoteTypeRecord, remote: NoteTypeRecord): NoteTypeRecord {
   const remoteNewer = isNewer(remote.updatedAt, local.updatedAt);
   const dominant = remoteNewer ? remote : local;
 

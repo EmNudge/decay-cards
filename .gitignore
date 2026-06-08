@@ -1,1 +1,9 @@
 node_modules/
+dist/
+deploy/
+
+# Local env overrides (Vite convention). `.env` IS committed because its
+# values are public (OAuth client URL, shell URL, parent origin).
+.env
+.env.local
+.env.*.local
