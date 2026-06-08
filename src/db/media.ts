@@ -1,7 +1,9 @@
 import type { MediaRecord } from "./schema";
 import { put, get, getAll, del, getAllByIndex } from "./helpers";
+import { outboxDb } from "./outbox";
 
 const STORE = "media";
+const NSID = "cards.decay.flashcard.media";
 
 /**
  * Normalize a filename to a valid AT Protocol record key.
@@ -45,11 +47,32 @@ function simpleHash(bytes: Uint8Array): string {
   return (hash >>> 0).toString(16).padStart(8, "0");
 }
 
+/**
+ * Build the lightweight metadata body that goes into the outbox.
+ * Blobs upload separately via blobs.ts; the record itself holds metadata
+ * + a BlobRef (added during sync.ts wiring, not at queue time).
+ */
+function mediaOutboxRecord(media: MediaRecord): Record<string, unknown> {
+  return {
+    normalizedKey: media.normalizedKey,
+    filename: media.filename,
+    ...(media.mimeType !== undefined && { mimeType: media.mimeType }),
+    createdAt: media.createdAt,
+    updatedAt: media.updatedAt,
+  };
+}
+
 export const mediaDb = {
-  put: (media: MediaRecord) => put<MediaRecord>(STORE, media),
+  async put(media: MediaRecord): Promise<void> {
+    await put<MediaRecord>(STORE, media);
+    await outboxDb.queuePut(NSID, media.normalizedKey, mediaOutboxRecord(media));
+  },
   get: (normalizedKey: string) => get<MediaRecord>(STORE, normalizedKey),
   getAll: () => getAll<MediaRecord>(STORE),
-  delete: (normalizedKey: string) => del(STORE, normalizedKey),
+  async delete(normalizedKey: string): Promise<void> {
+    await del(STORE, normalizedKey);
+    await outboxDb.queueDelete(NSID, normalizedKey);
+  },
 
   /** Find by original filename */
   getByFilename: (filename: string) => getAllByIndex<MediaRecord>(STORE, "filename", filename),

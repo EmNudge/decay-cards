@@ -1,0 +1,21 @@
+{
+  "lexicon": 1,
+  "id": "cards.decay.flashcard.forkDeck",
+  "description": "Marker recording that a local deck was forked from a remote shareDeck. Immutable post-create.",
+  "defs": {
+    "main": {
+      "type": "record",
+      "key": "any",
+      "record": {
+        "type": "object",
+        "required": ["sourceDeck", "localDeck", "forkedAt", "createdAt"],
+        "properties": {
+          "sourceDeck": { "type": "string", "format": "at-uri" },
+          "localDeck": { "type": "string", "format": "at-uri" },
+          "forkedAt": { "type": "string", "format": "datetime" },
+          "createdAt": { "type": "string", "format": "datetime" }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "lexicon": 1,
+  "id": "cards.decay.flashcard.media",
+  "description": "Media asset (image, audio) referenced by notes. Blob upload is separate from record metadata.",
+  "defs": {
+    "main": {
+      "type": "record",
+      "key": "normalizedKey",
+      "record": {
+        "type": "object",
+        "required": ["normalizedKey", "filename", "blob", "createdAt", "updatedAt"],
+        "properties": {
+          "normalizedKey": { "type": "string", "maxLength": 512 },
+          "filename": { "type": "string", "maxLength": 512 },
+          "mimeType": { "type": "string" },
+          "blob": { "type": "blob", "maxSize": 100000000 },
+          "createdAt": { "type": "string", "format": "datetime" },
+          "updatedAt": { "type": "string", "format": "datetime" }
+        }
+      }
+    }
+  }
+}

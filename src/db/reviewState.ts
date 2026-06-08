@@ -1,19 +1,36 @@
 import type { ReviewStateRecord } from "./schema";
 import { put, get, getAll, del, delMany, getAllByIndex, putMany } from "./helpers";
+import { outboxDb } from "./outbox";
 
 const STORE = "reviewState";
+const NSID = "cards.decay.flashcard.reviewState";
 
 export function reviewStateKey(noteTid: string, templateId: string): string {
   return `${noteTid}_${templateId}`;
 }
 
 export const reviewStateDb = {
-  put: (rs: ReviewStateRecord) => put<ReviewStateRecord>(STORE, rs),
-  putMany: (records: ReviewStateRecord[]) => putMany<ReviewStateRecord>(STORE, records),
+  async put(rs: ReviewStateRecord): Promise<void> {
+    await put<ReviewStateRecord>(STORE, rs);
+    await outboxDb.queuePut(NSID, rs.key, rs);
+  },
+  async putMany(records: ReviewStateRecord[]): Promise<void> {
+    await putMany<ReviewStateRecord>(STORE, records);
+    await outboxDb.queuePutMany(
+      NSID,
+      records.map((r) => ({ recordKey: r.key, record: r })),
+    );
+  },
   get: (key: string) => get<ReviewStateRecord>(STORE, key),
   getAll: () => getAll<ReviewStateRecord>(STORE),
-  delete: (key: string) => del(STORE, key),
-  deleteMany: (keys: string[]) => delMany(STORE, keys),
+  async delete(key: string): Promise<void> {
+    await del(STORE, key);
+    await outboxDb.queueDelete(NSID, key);
+  },
+  async deleteMany(keys: string[]): Promise<void> {
+    await delMany(STORE, keys);
+    await outboxDb.queueDeleteMany(NSID, keys);
+  },
 
   /** Get by composite key */
   getByNoteAndTemplate: (noteTid: string, templateId: string) =>

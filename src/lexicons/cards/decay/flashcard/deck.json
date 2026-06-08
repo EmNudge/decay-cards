@@ -1,0 +1,28 @@
+{
+  "lexicon": 1,
+  "id": "cards.decay.flashcard.deck",
+  "description": "A deck of flashcards. Soft-deletes via deletedAt; cascade is run by every device that observes deletedAt.",
+  "defs": {
+    "main": {
+      "type": "record",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": ["name", "createdAt", "updatedAt"],
+        "properties": {
+          "name": { "type": "string", "maxLength": 200 },
+          "description": { "type": "string", "maxLength": 2000 },
+          "parentDeck": { "type": "string", "format": "at-uri" },
+          "isFiltered": { "type": "boolean" },
+          "filteredQuery": { "type": "string" },
+          "filteredOrder": { "type": "string" },
+          "filteredLimit": { "type": "integer" },
+          "filteredReschedule": { "type": "boolean" },
+          "deletedAt": { "type": "string", "format": "datetime" },
+          "createdAt": { "type": "string", "format": "datetime" },
+          "updatedAt": { "type": "string", "format": "datetime" }
+        }
+      }
+    }
+  }
+}

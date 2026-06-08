@@ -7,6 +7,7 @@ import { noteTypesDb } from "../db/noteTypes";
 import { reviewStateDb } from "../db/reviewState";
 import { reviewLogsDb } from "../db/reviewLogs";
 import { deckSettingsDb } from "../db/settings";
+import { softDeleteDeck } from "../atproto/deckCascade";
 import { generateTid } from "../scheduler/bridge";
 import { parseSearch, matchExpr, type SearchableCard } from "../search/engine";
 import { stripHtml } from "../utils/stripHtml";
@@ -218,36 +219,7 @@ async function deleteDeck() {
   isDeleting.value = true;
 
   const raw = toRaw(targetDeck.value);
-  const deckUri = `at://self/cards.decay.flashcard.deck/${raw.tid}`;
-
-  // Soft-delete: set deletedAt
-  const deleted: DeckRecord = {
-    ...raw,
-    deletedAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  };
-  await decksDb.put(deleted);
-
-  // Only cascade-delete notes for regular decks, not filtered decks
-  if (!raw.isFiltered) {
-    const notes = await notesDb.getByDeck(deckUri);
-    for (const note of notes) {
-      const states = await reviewStateDb.getByNote(
-        `at://self/cards.decay.flashcard.note/${note.tid}`,
-      );
-      for (const rs of states) {
-        await reviewStateDb.delete(rs.key);
-      }
-      const logs = await reviewLogsDb.getByNote(`at://self/cards.decay.flashcard.note/${note.tid}`);
-      for (const log of logs) {
-        await reviewLogsDb.delete(log.tid);
-      }
-      await notesDb.delete(note.tid);
-    }
-  }
-
-  // Delete deck settings
-  await deckSettingsDb.delete(targetDeck.value.tid);
+  await softDeleteDeck(raw);
 
   isDeleting.value = false;
   mode.value = null;

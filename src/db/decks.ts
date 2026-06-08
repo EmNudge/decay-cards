@@ -1,14 +1,25 @@
 import type { DeckRecord } from "./schema";
 import { put, get, getAll, del, delMany } from "./helpers";
+import { outboxDb } from "./outbox";
 
 const STORE = "decks";
+const NSID = "cards.decay.flashcard.deck";
 
 export const decksDb = {
-  put: (deck: DeckRecord) => put<DeckRecord>(STORE, deck),
+  async put(deck: DeckRecord): Promise<void> {
+    await put<DeckRecord>(STORE, deck);
+    await outboxDb.queuePut(NSID, deck.tid, deck);
+  },
   get: (tid: string) => get<DeckRecord>(STORE, tid),
   getAll: () => getAll<DeckRecord>(STORE),
-  delete: (tid: string) => del(STORE, tid),
-  deleteMany: (tids: string[]) => delMany(STORE, tids),
+  async delete(tid: string): Promise<void> {
+    await del(STORE, tid);
+    await outboxDb.queueDelete(NSID, tid);
+  },
+  async deleteMany(tids: string[]): Promise<void> {
+    await delMany(STORE, tids);
+    await outboxDb.queueDeleteMany(NSID, tids);
+  },
 
   /** Get all non-deleted decks */
   async getAllActive(): Promise<DeckRecord[]> {

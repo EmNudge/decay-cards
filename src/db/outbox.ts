@@ -4,6 +4,25 @@ import { getDb } from "./schema";
 
 const OUTBOX = "outbox";
 
+type OutboxListener = () => void;
+const listeners = new Set<OutboxListener>();
+
+/** Subscribe to outbox writes (puts, deletes, bulk variants). Returns unsub. */
+export function onOutboxChange(fn: OutboxListener): () => void {
+  listeners.add(fn);
+  return () => listeners.delete(fn);
+}
+
+function notifyOutboxChange(): void {
+  for (const fn of listeners) {
+    try {
+      fn();
+    } catch (e) {
+      console.error("[outbox] listener threw:", e);
+    }
+  }
+}
+
 export const outboxDb = {
   /** Queue a put operation */
   async queuePut(collection: string, recordKey: string, record: unknown, groupId?: string) {
@@ -16,6 +35,36 @@ export const outboxDb = {
       ...(groupId !== undefined && { groupId }),
     };
     await put<OutboxEntry>(OUTBOX, entry);
+    notifyOutboxChange();
+  },
+
+  /** Queue multiple put operations in a single transaction. */
+  async queuePutMany(
+    collection: string,
+    records: Array<{ recordKey: string; record: unknown }>,
+    groupId?: string,
+  ): Promise<void> {
+    if (records.length === 0) return;
+    const now = new Date().toISOString();
+    const db = await getDb();
+    await new Promise<void>((resolve, reject) => {
+      const tx = db.transaction(OUTBOX, "readwrite");
+      const store = tx.objectStore(OUTBOX);
+      for (const { recordKey, record } of records) {
+        const entry: OutboxEntry = {
+          collection,
+          recordKey,
+          op: "put",
+          record,
+          createdAt: now,
+          ...(groupId !== undefined && { groupId }),
+        };
+        store.put(entry);
+      }
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
+    notifyOutboxChange();
   },
 
   /** Queue a delete operation */
@@ -28,6 +77,35 @@ export const outboxDb = {
       ...(groupId !== undefined && { groupId }),
     };
     await put<OutboxEntry>(OUTBOX, entry);
+    notifyOutboxChange();
+  },
+
+  /** Queue multiple delete operations in a single transaction. */
+  async queueDeleteMany(
+    collection: string,
+    recordKeys: string[],
+    groupId?: string,
+  ): Promise<void> {
+    if (recordKeys.length === 0) return;
+    const now = new Date().toISOString();
+    const db = await getDb();
+    await new Promise<void>((resolve, reject) => {
+      const tx = db.transaction(OUTBOX, "readwrite");
+      const store = tx.objectStore(OUTBOX);
+      for (const recordKey of recordKeys) {
+        const entry: OutboxEntry = {
+          collection,
+          recordKey,
+          op: "delete",
+          createdAt: now,
+          ...(groupId !== undefined && { groupId }),
+        };
+        store.put(entry);
+      }
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
+    notifyOutboxChange();
   },
 
   /** Get all pending entries */

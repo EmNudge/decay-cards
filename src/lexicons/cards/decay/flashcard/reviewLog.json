@@ -1,0 +1,40 @@
+{
+  "lexicon": 1,
+  "id": "cards.decay.flashcard.reviewLog",
+  "description": "Append-only review event. Records before/after snapshots of scheduling fields for downstream reconciliation.",
+  "defs": {
+    "main": {
+      "type": "record",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": ["note", "deck", "templateId", "answer", "phase", "algorithm", "reviewedAt", "resolvedDate"],
+        "properties": {
+          "note": { "type": "string", "format": "at-uri" },
+          "deck": { "type": "string", "format": "at-uri" },
+          "templateId": { "type": "string" },
+          "answer": { "type": "string", "enum": ["again", "hard", "good", "easy"] },
+          "phase": { "type": "string", "enum": ["new", "learning", "review", "relearning"] },
+          "algorithm": { "type": "string", "enum": ["sm2", "fsrs"] },
+          "intervalBeforeDays": { "type": "number" },
+          "intervalBeforeMinutes": { "type": "number" },
+          "intervalAfterDays": { "type": "number" },
+          "intervalAfterMinutes": { "type": "number" },
+          "easeFactorBefore": { "type": "number" },
+          "easeFactorAfter": { "type": "number" },
+          "stabilityBefore": { "type": "number" },
+          "stabilityAfter": { "type": "number" },
+          "difficultyBefore": { "type": "number" },
+          "difficultyAfter": { "type": "number" },
+          "phaseAfter": { "type": "string", "enum": ["new", "learning", "review", "relearning"] },
+          "repsAfter": { "type": "integer" },
+          "lapsesAfter": { "type": "integer" },
+          "learningStepIndexAfter": { "type": "integer" },
+          "timeTaken": { "type": "integer" },
+          "reviewedAt": { "type": "string", "format": "datetime" },
+          "resolvedDate": { "type": "string" }
+        }
+      }
+    }
+  }
+}

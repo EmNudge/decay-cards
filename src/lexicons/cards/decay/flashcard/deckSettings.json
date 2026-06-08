@@ -1,0 +1,47 @@
+{
+  "lexicon": 1,
+  "id": "cards.decay.flashcard.deckSettings",
+  "description": "Per-deck scheduling and study settings. rkey is the deck tid.",
+  "defs": {
+    "main": {
+      "type": "record",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": ["deck", "updatedAt"],
+        "properties": {
+          "deck": { "type": "string", "format": "at-uri" },
+          "algorithm": { "type": "string", "enum": ["sm2", "fsrs"] },
+          "newCardsPerDay": { "type": "integer" },
+          "reviewsPerDay": { "type": "integer" },
+          "learningSteps": {
+            "type": "array",
+            "items": { "type": "number" }
+          },
+          "relearningSteps": {
+            "type": "array",
+            "items": { "type": "number" }
+          },
+          "graduatingInterval": { "type": "number" },
+          "easyInterval": { "type": "number" },
+          "startingEase": { "type": "number" },
+          "easyBonus": { "type": "number" },
+          "hardMultiplier": { "type": "number" },
+          "intervalModifier": { "type": "number" },
+          "maximumInterval": { "type": "number" },
+          "lapseNewInterval": { "type": "number" },
+          "leechThreshold": { "type": "integer" },
+          "buryNewSiblings": { "type": "boolean" },
+          "buryReviewSiblings": { "type": "boolean" },
+          "desiredRetention": { "type": "number" },
+          "fsrsWeights": {
+            "type": "array",
+            "items": { "type": "number" }
+          },
+          "fsrsVersion": { "type": "integer" },
+          "updatedAt": { "type": "string", "format": "datetime" }
+        }
+      }
+    }
+  }
+}

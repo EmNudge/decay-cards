@@ -1,0 +1,21 @@
+{
+  "lexicon": 1,
+  "id": "cards.decay.flashcard.settings",
+  "description": "Global app settings singleton. rkey is always 'self'.",
+  "defs": {
+    "main": {
+      "type": "record",
+      "key": "literal:self",
+      "record": {
+        "type": "object",
+        "required": ["updatedAt"],
+        "properties": {
+          "defaultAlgorithm": { "type": "string", "enum": ["sm2", "fsrs"] },
+          "timezone": { "type": "string" },
+          "dayStartHour": { "type": "integer", "minimum": 0, "maximum": 23 },
+          "updatedAt": { "type": "string", "format": "datetime" }
+        }
+      }
+    }
+  }
+}

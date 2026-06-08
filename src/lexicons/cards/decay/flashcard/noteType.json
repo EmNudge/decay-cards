@@ -1,0 +1,50 @@
+{
+  "lexicon": 1,
+  "id": "cards.decay.flashcard.noteType",
+  "description": "Template + field definition for notes (Anki note types). Merges via per-element id-keyed union.",
+  "defs": {
+    "main": {
+      "type": "record",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": ["name", "fields", "templates", "createdAt", "updatedAt"],
+        "properties": {
+          "name": { "type": "string", "maxLength": 200 },
+          "isCloze": { "type": "boolean" },
+          "fields": {
+            "type": "array",
+            "items": { "type": "ref", "ref": "#field" }
+          },
+          "templates": {
+            "type": "array",
+            "items": { "type": "ref", "ref": "#template" }
+          },
+          "css": { "type": "string", "maxLength": 100000 },
+          "forkedFrom": { "type": "string", "format": "at-uri" },
+          "createdAt": { "type": "string", "format": "datetime" },
+          "updatedAt": { "type": "string", "format": "datetime" }
+        }
+      }
+    },
+    "field": {
+      "type": "object",
+      "required": ["id", "name"],
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" }
+      }
+    },
+    "template": {
+      "type": "object",
+      "required": ["id", "name", "qfmt", "afmt"],
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "qfmt": { "type": "string", "maxLength": 100000 },
+        "afmt": { "type": "string", "maxLength": 100000 }
+      }
+    }
+  }
+}

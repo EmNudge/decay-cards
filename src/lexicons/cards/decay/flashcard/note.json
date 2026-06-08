@@ -1,0 +1,39 @@
+{
+  "lexicon": 1,
+  "id": "cards.decay.flashcard.note",
+  "description": "A flashcard note. Field values keyed by noteType field id. Standard LWW merge.",
+  "defs": {
+    "main": {
+      "type": "record",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": ["deck", "noteType", "fields", "createdAt", "updatedAt"],
+        "properties": {
+          "deck": { "type": "string", "format": "at-uri" },
+          "noteType": { "type": "string", "format": "at-uri" },
+          "ankiNoteId": { "type": "integer" },
+          "forkedFrom": { "type": "string", "format": "at-uri" },
+          "fields": {
+            "type": "array",
+            "items": { "type": "ref", "ref": "#fieldValue" }
+          },
+          "tags": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "createdAt": { "type": "string", "format": "datetime" },
+          "updatedAt": { "type": "string", "format": "datetime" }
+        }
+      }
+    },
+    "fieldValue": {
+      "type": "object",
+      "required": ["fieldId", "value"],
+      "properties": {
+        "fieldId": { "type": "string" },
+        "value": { "type": "string", "maxLength": 100000 }
+      }
+    }
+  }
+}

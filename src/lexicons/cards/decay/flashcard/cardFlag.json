@@ -1,0 +1,25 @@
+{
+  "lexicon": 1,
+  "id": "cards.decay.flashcard.cardFlag",
+  "description": "User-set color flag on a specific card (note + template).",
+  "defs": {
+    "main": {
+      "type": "record",
+      "key": "any",
+      "record": {
+        "type": "object",
+        "required": ["note", "templateId", "flag", "createdAt", "updatedAt"],
+        "properties": {
+          "note": { "type": "string", "format": "at-uri" },
+          "templateId": { "type": "string" },
+          "flag": {
+            "type": "string",
+            "enum": ["red", "orange", "green", "blue", "pink", "turquoise", "purple"]
+          },
+          "createdAt": { "type": "string", "format": "datetime" },
+          "updatedAt": { "type": "string", "format": "datetime" }
+        }
+      }
+    }
+  }
+}

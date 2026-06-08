@@ -1,0 +1,141 @@
+<!doctype html>
+<!--
+  Card render shell.
+
+  Deployed to a SEPARATE eTLD+1 (decaycards.emnudge.dev) so cookies and
+  storage on the main app domain (decay.cards) cannot reach card-author
+  HTML. Receives card HTML + media ArrayBuffers from the parent via
+  postMessage, materializes blob URLs locally, and renders the result.
+
+  CSP: default-src 'none' — no external requests at all. Inline scripts
+  and styles are allowed because the shell itself ships some, but the
+  shell aggressively clears local storage before each render so no
+  state can leak from one card to the next.
+-->
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'none'; img-src blob: data:; media-src blob: data:; style-src 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src 'none'; font-src data:"
+    />
+    <title>Card</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        background: #f7f9fb;
+        color: #0b1019;
+        font-family: system-ui, -apple-system, sans-serif;
+      }
+      html.dark,
+      html.dark body {
+        background: #0e141b;
+        color: #f1f3f5;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script>
+      (function () {
+        // The single origin we trust. Configured at deploy time by
+        // replacing the marker before serving.
+        var ALLOWED_PARENT_ORIGINS = ["__ALLOWED_PARENT_ORIGINS__"];
+
+        function allowed(origin) {
+          if (ALLOWED_PARENT_ORIGINS.length === 0) return false;
+          if (
+            ALLOWED_PARENT_ORIGINS.length === 1 &&
+            ALLOWED_PARENT_ORIGINS[0] === "__ALLOWED_PARENT_ORIGINS__"
+          ) {
+            // Unconfigured dev build — accept same-origin only.
+            return origin === window.location.origin;
+          }
+          return ALLOWED_PARENT_ORIGINS.indexOf(origin) !== -1;
+        }
+
+        var blobUrls = [];
+
+        function clearLocalState() {
+          try {
+            for (var u = 0; u < blobUrls.length; u++) URL.revokeObjectURL(blobUrls[u]);
+          } catch (e) {}
+          blobUrls = [];
+          try {
+            localStorage.clear();
+          } catch (e) {}
+          try {
+            sessionStorage.clear();
+          } catch (e) {}
+          try {
+            if (window.indexedDB && indexedDB.databases) {
+              indexedDB.databases().then(function (dbs) {
+                for (var i = 0; i < dbs.length; i++) {
+                  if (dbs[i] && dbs[i].name) indexedDB.deleteDatabase(dbs[i].name);
+                }
+              });
+            }
+          } catch (e) {}
+          try {
+            if (window.caches && caches.keys) {
+              caches.keys().then(function (keys) {
+                for (var i = 0; i < keys.length; i++) caches.delete(keys[i]);
+              });
+            }
+          } catch (e) {}
+        }
+
+        function escape(str) {
+          return String(str).replace(/[&<>"']/g, function (ch) {
+            return (
+              { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]
+            );
+          });
+        }
+
+        function attach(html, media) {
+          clearLocalState();
+          var byFilename = {};
+          for (var i = 0; i < media.length; i++) {
+            var item = media[i];
+            if (!item || !item.filename || !item.data) continue;
+            var blob = new Blob([item.data], {
+              type: item.mimeType || "application/octet-stream",
+            });
+            var url = URL.createObjectURL(blob);
+            blobUrls.push(url);
+            byFilename[item.filename] = url;
+          }
+          var rewritten = String(html).replace(/src="([^"]+)"/g, function (_match, src) {
+            if (
+              src.indexOf("data:") === 0 ||
+              src.indexOf("blob:") === 0 ||
+              src.indexOf("http") === 0
+            )
+              return 'src="' + escape(src) + '"';
+            var hit = byFilename[src];
+            return hit ? 'src="' + escape(hit) + '"' : 'src="' + escape(src) + '"';
+          });
+          document.getElementById("root").innerHTML = rewritten;
+        }
+
+        window.addEventListener("message", function (e) {
+          if (!allowed(e.origin)) return;
+          var data = e.data;
+          if (!data || typeof data !== "object") return;
+          if (data.type === "render") {
+            attach(data.html || "", Array.isArray(data.media) ? data.media : []);
+          } else if (data.type === "theme") {
+            document.documentElement.classList.toggle("dark", data.theme === "dark");
+          }
+        });
+
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({ type: "ready" }, "*");
+        }
+      })();
+    </script>
+  </body>
+</html>

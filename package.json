@@ -23,6 +23,8 @@
     "test:e2e:debug": "playwright test --debug"
   },
   "dependencies": {
+    "@atproto/api": "^0.20.9",
+    "@atproto/oauth-client-browser": "^0.4.1",
     "@dweb-browser/zstd-wasm": "^1.2.1",
     "@tiptap/core": "^3.26.0",
     "@tiptap/extension-image": "^3.26.0",

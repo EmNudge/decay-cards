@@ -1,0 +1,40 @@
+{
+  "lexicon": 1,
+  "id": "cards.decay.flashcard.reviewState",
+  "description": "Per-card scheduling state. Reconciled from reviewLog after-states during sync; suspended/buried flags merge per-flag.",
+  "defs": {
+    "main": {
+      "type": "record",
+      "key": "any",
+      "record": {
+        "type": "object",
+        "required": ["note", "templateId", "algorithm", "phase", "reps", "lapses", "createdAt", "updatedAt"],
+        "properties": {
+          "note": { "type": "string", "format": "at-uri" },
+          "templateId": { "type": "string" },
+          "algorithm": { "type": "string", "enum": ["sm2", "fsrs"] },
+          "phase": { "type": "string", "enum": ["new", "learning", "review", "relearning"] },
+          "due": { "type": "string", "format": "datetime" },
+          "intervalDays": { "type": "number" },
+          "intervalMinutes": { "type": "number" },
+          "learningStepIndex": { "type": "integer" },
+          "easeFactor": { "type": "number" },
+          "reps": { "type": "integer" },
+          "lapses": { "type": "integer" },
+          "stability": { "type": "number" },
+          "difficulty": { "type": "number" },
+          "suspended": { "type": "boolean" },
+          "suspendedChangedAt": { "type": "string", "format": "datetime" },
+          "buried": { "type": "boolean" },
+          "buriedChangedAt": { "type": "string", "format": "datetime" },
+          "buriedDate": { "type": "string" },
+          "orphaned": { "type": "boolean" },
+          "orphanedAt": { "type": "string", "format": "datetime" },
+          "lastReviewed": { "type": "string", "format": "datetime" },
+          "createdAt": { "type": "string", "format": "datetime" },
+          "updatedAt": { "type": "string", "format": "datetime" }
+        }
+      }
+    }
+  }
+}

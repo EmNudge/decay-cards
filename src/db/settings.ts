@@ -1,8 +1,12 @@
 import type { SettingsRecord, DeckSettingsRecord } from "./schema";
 import { put, get, getAll, del } from "./helpers";
+import { outboxDb } from "./outbox";
 
 const SETTINGS = "settings";
 const DECK_SETTINGS = "deckSettings";
+
+const SETTINGS_NSID = "cards.decay.flashcard.settings";
+const DECK_SETTINGS_NSID = "cards.decay.flashcard.deckSettings";
 
 /** Hardcoded application defaults */
 export const APP_DEFAULTS = {
@@ -33,7 +37,9 @@ export const settingsDb = {
   },
 
   async put(settings: SettingsRecord): Promise<void> {
-    return put<SettingsRecord>(SETTINGS, { ...settings, key: "self" });
+    const normalized: SettingsRecord = { ...settings, key: "self" };
+    await put<SettingsRecord>(SETTINGS, normalized);
+    await outboxDb.queuePut(SETTINGS_NSID, "self", normalized);
   },
 
   /** Get a resolved setting value with fallback to app default */
@@ -49,10 +55,16 @@ export const settingsDb = {
 };
 
 export const deckSettingsDb = {
-  put: (ds: DeckSettingsRecord) => put<DeckSettingsRecord>(DECK_SETTINGS, ds),
+  async put(ds: DeckSettingsRecord): Promise<void> {
+    await put<DeckSettingsRecord>(DECK_SETTINGS, ds);
+    await outboxDb.queuePut(DECK_SETTINGS_NSID, ds.deckTid, ds);
+  },
   get: (deckTid: string) => get<DeckSettingsRecord>(DECK_SETTINGS, deckTid),
   getAll: () => getAll<DeckSettingsRecord>(DECK_SETTINGS),
-  delete: (deckTid: string) => del(DECK_SETTINGS, deckTid),
+  async delete(deckTid: string): Promise<void> {
+    await del(DECK_SETTINGS, deckTid);
+    await outboxDb.queueDelete(DECK_SETTINGS_NSID, deckTid);
+  },
 
   /** Get resolved settings for a deck, falling through to app defaults */
   async getResolved(deckTid: string) {

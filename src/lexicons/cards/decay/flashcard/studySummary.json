@@ -1,0 +1,26 @@
+{
+  "lexicon": 1,
+  "id": "cards.decay.flashcard.studySummary",
+  "description": "Daily aggregate of review activity. rkey is the YYYY-MM-DD resolved date. Conflicts rebuilt from reviewLogs.",
+  "defs": {
+    "main": {
+      "type": "record",
+      "key": "any",
+      "record": {
+        "type": "object",
+        "required": ["date", "reviewCount", "updatedAt"],
+        "properties": {
+          "date": { "type": "string" },
+          "reviewCount": { "type": "integer" },
+          "newCount": { "type": "integer" },
+          "timeSpentMs": { "type": "integer" },
+          "againCount": { "type": "integer" },
+          "hardCount": { "type": "integer" },
+          "goodCount": { "type": "integer" },
+          "easyCount": { "type": "integer" },
+          "updatedAt": { "type": "string", "format": "datetime" }
+        }
+      }
+    }
+  }
+}

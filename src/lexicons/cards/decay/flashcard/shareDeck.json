@@ -1,0 +1,26 @@
+{
+  "lexicon": 1,
+  "id": "cards.decay.flashcard.shareDeck",
+  "description": "Publish a deck for others to fork. rkey is the deck tid.",
+  "defs": {
+    "main": {
+      "type": "record",
+      "key": "any",
+      "record": {
+        "type": "object",
+        "required": ["deck", "createdAt", "updatedAt"],
+        "properties": {
+          "deck": { "type": "string", "format": "at-uri" },
+          "title": { "type": "string", "maxLength": 200 },
+          "description": { "type": "string", "maxLength": 2000 },
+          "tags": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "createdAt": { "type": "string", "format": "datetime" },
+          "updatedAt": { "type": "string", "format": "datetime" }
+        }
+      }
+    }
+  }
+}

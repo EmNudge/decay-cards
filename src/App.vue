@@ -8,10 +8,13 @@ import SettingsView from "./components/SettingsView.vue";
 import NoteEditor from "./components/NoteEditor.vue";
 import CsvImportView from "./components/CsvImportView.vue";
 import DeckManager from "./components/DeckManager.vue";
+import LoginView from "./components/LoginView.vue";
 import { useDecks } from "./composables/useDecks";
 import { useImport } from "./composables/useImport";
 import { useTheme } from "./composables/useTheme";
 import { deleteDb } from "./db/schema";
+import { isSignedIn } from "./atproto/client";
+import { syncStatus } from "./atproto/scheduler";
 
 type View = "decks" | "study" | "import" | "csv-import" | "browse" | "settings";
 const activeView = ref<View>("decks");
@@ -19,6 +22,7 @@ const deckListKey = ref(0);
 const showNoteEditor = ref(false);
 const importFileInput = ref<HTMLInputElement>();
 const showNewMenu = ref(false);
+const showLogin = ref(false);
 const deckManagerRef = ref<InstanceType<typeof DeckManager>>();
 
 function closeNewMenu(e: MouseEvent) {
@@ -38,6 +42,20 @@ const ioCreateMode = ref(false);
 const themeIcon = computed(() => {
   if (choice.value === "system") return "◐";
   return resolved.value === "dark" ? "☾" : "☀";
+});
+
+const accountDotColor = computed(() => {
+  if (!isSignedIn.value) return undefined;
+  if (syncStatus.syncing.value) return "var(--c-accent)";
+  if (syncStatus.hasError.value) return "#ef4444";
+  return "#22c55e";
+});
+
+const accountTitle = computed(() => {
+  if (!isSignedIn.value) return "Sign in with AT Protocol";
+  if (syncStatus.syncing.value) return "Syncing…";
+  if (syncStatus.hasError.value) return syncStatus.lastError.value ?? "Sync issues";
+  return "Synced";
 });
 const themeLabel = computed(() =>
   choice.value === "system"
@@ -226,6 +244,21 @@ async function handleImportFile(event: Event) {
             @change="handleImportFile"
           />
 
+          <button
+            class="btn-icon"
+            :title="accountTitle"
+            :aria-label="accountTitle"
+            @click="showLogin = true"
+          >
+            <span
+              class="inline-block w-2 h-2 rounded-full"
+              :style="{
+                background: accountDotColor,
+                border: isSignedIn ? 'none' : '1px solid var(--c-fg-muted)',
+              }"
+            ></span>
+          </button>
+
           <button class="btn-icon" :title="themeLabel" :aria-label="themeLabel" @click="cycleTheme">
             <span class="text-base leading-none">{{ themeIcon }}</span>
           </button>
@@ -280,5 +313,7 @@ async function handleImportFile(event: Event) {
     />
 
     <DeckManager ref="deckManagerRef" @done="loadDecks(); deckListKey++" />
+
+    <LoginView v-if="showLogin" @close="showLogin = false" />
   </div>
 </template>

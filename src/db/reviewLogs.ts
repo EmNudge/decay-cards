@@ -1,14 +1,28 @@
 import type { ReviewLogRecord } from "./schema";
 import { put, get, getAll, del, getAllByIndex, putMany } from "./helpers";
+import { outboxDb } from "./outbox";
 
 const STORE = "reviewLogs";
+const NSID = "cards.decay.flashcard.reviewLog";
 
 export const reviewLogsDb = {
-  put: (log: ReviewLogRecord) => put<ReviewLogRecord>(STORE, log),
-  putMany: (logs: ReviewLogRecord[]) => putMany<ReviewLogRecord>(STORE, logs),
+  async put(log: ReviewLogRecord): Promise<void> {
+    await put<ReviewLogRecord>(STORE, log);
+    await outboxDb.queuePut(NSID, log.tid, log);
+  },
+  async putMany(logs: ReviewLogRecord[]): Promise<void> {
+    await putMany<ReviewLogRecord>(STORE, logs);
+    await outboxDb.queuePutMany(
+      NSID,
+      logs.map((l) => ({ recordKey: l.tid, record: l })),
+    );
+  },
   get: (tid: string) => get<ReviewLogRecord>(STORE, tid),
   getAll: () => getAll<ReviewLogRecord>(STORE),
-  delete: (tid: string) => del(STORE, tid),
+  async delete(tid: string): Promise<void> {
+    await del(STORE, tid);
+    await outboxDb.queueDelete(NSID, tid);
+  },
 
   /** Get all logs for a note */
   getByNote: (noteUri: string) => getAllByIndex<ReviewLogRecord>(STORE, "noteUri", noteUri),
